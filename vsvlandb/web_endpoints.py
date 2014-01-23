@@ -94,7 +94,7 @@ def vlans_add():
                     data['error']['badsiteid'] = True
                     flash(u"Bad Site ID. Please make your selection again.", category='danger')   
 
-        if 'acive' in request.form:
+        if 'active' in request.form:
             if re.match(r'^(on|off)$', request.form['active']):
                 isactive = True
             else:
