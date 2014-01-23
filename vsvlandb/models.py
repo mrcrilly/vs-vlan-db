@@ -68,4 +68,5 @@ class Site(dbo.Model):
 		self.description = description
 
 	def __repr__(self):
-		return '<Site {0} ({1})>'.format(self.sitename, self.isactive)
+		return '<Site {0} ({1})>'.format(self.name, self.isactive)
+        
