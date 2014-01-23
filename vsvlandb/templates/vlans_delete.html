@@ -1,21 +1,30 @@
 {% extends "base.html" %}
-{% block title %}VS VLAN DB - Add Subnet{% endblock %}
+{% block title %}VS VLAN DB - Delete VLAN{% endblock %}
 {% block content %}
+<div class="row">
+	<div class="col-lg-12">
+		<div class="alert alert-danger">You are about to delete a VLAN! Please make sure this is absolutely what you want to do.</div>
+	</div>
+</div>
 <div class="row">
 	<div class="col-lg-4">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-					Add New Subnet
+					Edit VLAN
 			</div>
 			<div class="panel-body">
 				<form role="form">
 					<div class="form-group">
-						<label for="subnet">Subnet</label>
-						<input class="form-control" id="subnet" placeholder="Subnet">
+						<label for="vlanId">VLAN ID</label>
+						<input class="form-control" id="vlanId" placeholder="VLAN ID">
 					</div>
 					<div class="form-group">
-						<label for="netmask">Netmask/CIDR</label>
-						<input class="form-control" id="netmask" placeholder="Netmask/CIDR">
+						<label for="subnet">Subnet (Optional)</label>
+						<select class="form-control" id="subnet">
+							<option>10.8.0.0/16</option>
+							<option>10.8.24.0/24</option>
+							<option>10.24.0.0/16</option>
+						</select>
 					</div>
 					<div class="form-group">
 						<label for="site">Site (Optional)</label>
@@ -29,29 +38,32 @@
 					</div>
 					<div class="checkbox">
 						<label>
-							<input type="checkbox" id="isactive"> Active?
+							<input type="checkbox"> OTV VLAN
+						</label>
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox"> Active?
 						</label>
 					</div>
 					<br />
-					<button type="submit" class="btn btn-success">Create</button>
+					<button type="submit" class="btn btn-success">Update</button>
+					<button type="submit" class="btn btn-danger">Cancel</button>
 				</form>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-8">
 		<div class="panel panel-default">
-			<div class="panel-heading">Last Ten Subnets</div>
+			<div class="panel-heading">Last Ten VLANs</div>
 				<div class="panel-body">
 					<table class="table table-striped">
 						<thead>
 							<tr>
-								<th>#</th>
-								<th>Subnet</th>
-								<th>Netmask</th>
-								<th>Cidr</th>
+								<th>VLAN</th>
 								<th>Site</th>
-								<th>VLAN Count</th>
-								<th>Active</th>
+								<th>Subnet</th>
+								<th>OTV</th>
 							</tr>
 						</thead>
 						<tbody>

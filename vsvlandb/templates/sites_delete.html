@@ -1,11 +1,16 @@
 {% extends "base.html" %}
-{% block title %}VS VLAN DB - Add Site{% endblock %}
+{% block title %}VS VLAN DB - Delete Site{% endblock %}
 {% block content %}
+<div class="row">
+	<div class="col-lg-12">
+		<div class="alert alert-danger">You are about to delete a site! Please make sure this is absolutely what you want to do.</div>
+	</div>
+</div>
 <div class="row">
 	<div class="col-lg-4">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-					Add New Site
+					Delete Site
 			</div>
 			<div class="panel-body">
 				<form role="form">
@@ -23,7 +28,8 @@
 						</label>
 					</div>
 					<br />
-					<button type="submit" class="btn btn-success">Create</button>
+					<button type="submit" class="btn btn-success">Delete</button>
+					<button type="submit" class="btn btn-danger">Cancel</button>
 				</form>
 			</div>
 		</div>
