@@ -1,7 +1,8 @@
 
-from vsvlandb import app
+from vsvlandb import app, dbo
+from vsvlandb.models import VLAN, Subnet, Site
 
-from flask import request, render_template
+from flask import redirect, request, render_template, url_for
 
 # Root/Index
 @app.route('/')
@@ -13,11 +14,21 @@ def index():
 # VLANS
 @app.route('/vlans')
 def vlans():
-	return render_template('vlans_list.html')
+	vlans = VLAN.query.all()
+	return render_template('vlans_list.html', vlans=vlans)
 
-@app.route('/vlans/add')
+@app.route('/vlans/add', methods=['GET', 'POST'])
 def vlans_add():
-	return render_template('vlans_add.html')
+	if request.method == 'GET':
+		return render_template('vlans_add.html')
+	else:
+		print "Got POST"
+
+		vlan = VLAN(request.form['vlanId'])
+		dbo.session.add(vlan)
+		dbo.session.commit()
+
+		return redirect(url_for('/vlans'))
 
 @app.route('/vlans/edit/<int:vlanid>')
 def vlans_edit(vlanid):
@@ -26,7 +37,6 @@ def vlans_edit(vlanid):
 @app.route('/vlans/delete/<int:vlanid>')
 def vlans_delete(vlanid):
 	return render_template('vlans_delete.html')
-
 
 
 # Subnets
