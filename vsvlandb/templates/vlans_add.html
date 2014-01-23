@@ -8,14 +8,14 @@
 					Add New VLAN
 			</div>
 			<div class="panel-body">
-				<form role="form" action="/vlans/add" method="post">
+				<form role="form" action="/vlans/add" method="post" name="addvlan">
 					<div class="form-group">
 						<label for="vlanId">VLAN ID</label>
-						<input class="form-control" id="vlanId" placeholder="VLAN ID">
+						<input class="form-control" id="vlanId" placeholder="VLAN ID" name="vlanid">
 					</div>
 					<div class="form-group">
 						<label for="subnet">Subnet (Optional)</label>
-						<select class="form-control" id="subnet">
+						<select class="form-control" id="subnet" name="subnet">
 							<option>10.8.0.0/16</option>
 							<option>10.8.24.0/24</option>
 							<option>10.24.0.0/16</option>
@@ -23,7 +23,7 @@
 					</div>
 					<div class="form-group">
 						<label for="site">Site (Optional)</label>
-						<select multiple class="form-control" id="site">
+						<select multiple class="form-control" id="site" name="site">
 							<option>London 01</option>
 							<option>London 02</option>
 							<option>Paris 01</option>
@@ -33,12 +33,12 @@
 					</div>
 					<div class="checkbox">
 						<label>
-							<input type="checkbox"> OTV VLAN
+							<input type="checkbox" name="otv"> OTV VLAN
 						</label>
 					</div>
 					<div class="checkbox">
 						<label>
-							<input type="checkbox"> Active?
+							<input type="checkbox" name="active"> Active?
 						</label>
 					</div>
 					<br />

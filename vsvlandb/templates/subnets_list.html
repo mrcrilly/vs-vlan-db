@@ -27,7 +27,17 @@
 								</tr>
 							</thead>
 							<tbody>
-
+							{% for subnet in subnets %}
+								<tr>
+									<td>{{ subnet.id }}</td>
+									<td>{{ subnet.subnet }}</td>
+									<td>N/A</td>
+									<td>N/A</td>
+									<td>N/A</td>
+									<td>N/A</td>
+									<td>N/A</td>
+								</tr>
+							{% endfor %}
 							</tbody>
 						</table>
 					</div>

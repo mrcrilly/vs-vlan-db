@@ -5,19 +5,19 @@
 	<div class="col-lg-4">
 		<div class="dashboard-element">
 			<h2 class="text-center">VLANS</h2>
-			<p class="text-center text-success">0</p>
+			<p class="text-center text-success"><a href="/vlans">{{lists['vlans']|count}}</a></p>
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<div class="dashboard-element">
+			<h2 class="text-center">Subnets</h2>
+			<p class="text-center text-success"><a href="/subnets">{{lists['subnets']|count}}</a></p>
 		</div>
 	</div>
 	<div class="col-lg-4">
 		<div class="dashboard-element">
 			<h2 class="text-center">Sites</h2>
-			<p class="text-center text-success">0</p>
-		</div>
-	</div>
-	<div class="col-lg-4">
-		<div class="dashboard-element">
-			<h2 class="text-center">Active</h2>
-			<p class="text-center text-success">0</p>
+			<p class="text-center text-success"><a href="/sites">{{lists['sites']|count}}</a></p>
 		</div>
 	</div>
 </div>
@@ -48,7 +48,15 @@
 								</tr>
 							</thead>
 							<tbody>
-
+							{% for vlan in lists['vlans'] %}
+								<tr>
+									<td>{{vlan.id}}</td>
+									<td>{{vlan.vlanid}}</td>
+									<td>N/A</td>
+									<td>N/A</td>
+									<td>N/A</td>
+								</tr>
+							{% endfor %}
 							</tbody>
 						</table>
 					</div>
@@ -78,7 +86,15 @@
 								</tr>
 							</thead>
 							<tbody>
-
+							{% for subnet in lists['subnets'] %}
+								<tr>
+									<td>{{subnet.id}}</td>
+									<td>{{subnet.subnet}}</td>
+									<td>N/A</td>
+									<td>N/A</td>
+									<td>N/A</td>
+								</tr>
+							{% endfor %}
 							</tbody>
 						</table>
 					</div>
@@ -105,7 +121,15 @@
 								</tr>
 							</thead>
 							<tbody>
-								
+							{% for site in lists['sites'] %}
+								<tr>
+									<td>{{site.id}}</td>
+									<td>{{site.sitename}}</td>
+									<td>N/A</td>
+									<td>N/A</td>
+									<td>N/A</td>
+								</tr>
+							{% endfor %}
 							</tbody>
 						</table>
 					</div>

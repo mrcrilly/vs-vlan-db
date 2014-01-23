@@ -8,18 +8,18 @@
 					Add New Subnet
 			</div>
 			<div class="panel-body">
-				<form role="form">
+				<form role="form" action="/subnets/add" method="post" name="subnetadd">
 					<div class="form-group">
 						<label for="subnet">Subnet</label>
-						<input class="form-control" id="subnet" placeholder="Subnet">
+						<input class="form-control" id="subnet" placeholder="Subnet" name="subnet">
 					</div>
 					<div class="form-group">
 						<label for="netmask">Netmask/CIDR</label>
-						<input class="form-control" id="netmask" placeholder="Netmask/CIDR">
+						<input class="form-control" id="netmask" placeholder="Netmask/CIDR" name="network">
 					</div>
 					<div class="form-group">
 						<label for="site">Site (Optional)</label>
-						<select multiple class="form-control" id="site">
+						<select multiple class="form-control" id="site" name="site">
 							<option>London 01</option>
 							<option>London 02</option>
 							<option>Paris 01</option>
@@ -29,11 +29,11 @@
 					</div>
 					<div class="checkbox">
 						<label>
-							<input type="checkbox" id="isactive"> Active?
+							<input type="checkbox" id="isactive" name="active"> Active?
 						</label>
 					</div>
 					<br />
-					<button type="submit" class="btn btn-success">Create</button>
+					<button type="submit" class="btn btn-success"">Create</button>
 				</form>
 			</div>
 		</div>
