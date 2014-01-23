@@ -26,7 +26,15 @@
 								</tr>
 							</thead>
 							<tbody>
-
+							{% for vlan in vlans %}
+								<tr>
+									<td>{{vlan.id}}</td>
+									<td>{{vlan.vlanid}}</td>
+									<td>&nbsp;</td>
+									<td>&nbsp;</td>
+									<td>&nbsp;</td>
+								</tr>
+							{% endfor %}
 							</tbody>
 						</table>
 					</div>
