@@ -55,21 +55,66 @@ def vlans_add():
         return render_template('vlans_add.html', data=data)
 
     if request.method == 'POST':
-        vlanid = request.form['vlandid']
-        subnetid = request.form['subnet']
-        siteid = request.form['site']
-        isactive = request.form['active']
-        enhanced = request.form['enhanced']
+        data = {
+            'error': {}
+        }
 
+        vlanid = None 
+        subnets = [] 
+        sites = []
+        isactive = False
+        enhanced = False
 
-        vlan_re = re.match(r'^[0-9]{1,5}$', vlanid)
+        if 'vlanid' in request.form:
+            if re.match(r'^[0-9]{1,5}$', request.form['vlanid']):
+                vlanid = request.form['vlanid']
+            else:
+                data['error']['badvlanid'] = True
+                flash(u"Bad VLAN ID. Please try again.", category='danger')
 
-        if vlan_re:
-            vlan = VLAN()
-            dbo.session.add(vlanid)
-            dbo.session.commit()
+        if 'subnet' in request.form:
+            selections = request.form.getlist('subnet')
+            for selection in selections:
+                if re.match(r'^[0-9]{1,}$', selection):
+                    subnet = Subnet.query.filter_by(id=selection).limit(1)
+                    if subnet.count() >= 1:
+                        subnets.append(subnet.first())
+                else:
+                    data['error']['badsubnetid'] = True
+                    flash(u"Bad Subnet ID. Please make your selection again.", category='danger')
 
-        return redirect('/vlans')
+        if 'site' in request.form:
+            selections = request.form.getlist('site')
+            for selection in selections:
+                if re.match(r'^[0-9]{1,}$', selection):
+                    site = Site.query.filter_by(id=selection).limit(1)
+                    if site.count() >= 1:
+                        sites.append(site.first())
+                else:
+                    data['error']['badsiteid'] = True
+                    flash(u"Bad Site ID. Please make your selection again.", category='danger')   
+
+        if 'acive' in request.form:
+            if re.match(r'^(on|off)$', request.form['active']):
+                isactive = True
+            else:
+                isactive = False
+
+        if 'enhanced' in request.form:
+            print "enhanced"
+            if re.match(r'^(on|off)$', request.form['enhanced']):
+                enhanced = True
+            else:
+                enhanced = False
+
+        for site in sites:
+            for subnet in subnets:
+                print "{0}: {1}: {2}".format(vlanid, subnet, site)
+                vlan = VLAN(vlanid, subnet, site, isactive, enhanced)
+                dbo.session.add(vlan)
+                dbo.session.commit()
+
+    return redirect('/vlans')
 
 @app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_edit(vlanid):
