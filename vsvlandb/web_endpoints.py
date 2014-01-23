@@ -19,12 +19,12 @@ def vlans():
 def vlans_add():
 	return render_template('vlans_add.html')
 
-@app.route('/vlans/edit')
-def vlans_edit():
+@app.route('/vlans/edit/<int:vlanid>')
+def vlans_edit(vlanid):
 	return render_template('vlans_edit.html')
 
-@app.route('/vlans/delete')
-def vlans_delete():
+@app.route('/vlans/delete/<int:vlanid>')
+def vlans_delete(vlanid):
 	return render_template('vlans_delete.html')
 
 
@@ -38,12 +38,12 @@ def subnets():
 def subnets_add():
 	return render_template('subnets_add.html')
 
-@app.route('/subnets/edit')
-def subnets_edit():
+@app.route('/subnets/edit/<int:subnetid>')
+def subnets_edit(subnetid):
 	return render_template('subnets_edit.html')
 
-@app.route('/subnets/delete')
-def subnets_delete():
+@app.route('/subnets/delete/<int:subnetid>')
+def subnets_delete(subnetid):
 	return render_template('subnets_delete.html')
 
 
@@ -57,10 +57,10 @@ def sites():
 def sites_add():
 	return render_template('sites_add.html')
 
-@app.route('/sites/edit')
-def sites_edit():
+@app.route('/sites/edit/<int:siteid>')
+def sites_edit(siteid):
 	return render_template('sites_edit.html')
 
-@app.route('/sites/delete')
-def sites_delete():
+@app.route('/sites/delete/<int:siteid>')
+def sites_delete(siteid):
 	return render_template('sites_delete.html')
