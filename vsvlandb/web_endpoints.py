@@ -4,6 +4,8 @@ from vsvlandb.models import VLAN, Subnet, Site
 
 from flask import redirect, request, render_template, url_for
 
+import re
+
 # Root/Index
 @app.route('/')
 def index():
@@ -25,19 +27,36 @@ def vlans_add():
 	if request.method == 'GET':
 		return render_template('vlans_add.html')
 	else:
-		vlan = VLAN(request.form['vlanid'])
+		vlan = VLAN(int(request.form['vlanid']))
 		dbo.session.add(vlan)
 		dbo.session.commit()
 
 		return redirect('/vlans')
 
-@app.route('/vlans/edit/<int:vlanid>')
+@app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_edit(vlanid):
-	return render_template('vlans_edit.html')
+	if request.method == 'GET':
+		vlan = VLAN.query.filter_by(id=int(vlanid)).first()
+		return render_template('vlans_edit.html', vlan=vlan)
+	
+	if request.method== 'POST':
+		vlan = VLAN(int(request.form['vlanid']))
+		dbo.session.add(vlan)
+		dbo.session.commit()
 
-@app.route('/vlans/delete/<int:vlanid>')
+	return redirect('/vlans')
+
+@app.route('/vlans/delete/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_delete(vlanid):
-	return render_template('vlans_delete.html')
+	if request.method == 'GET':
+		vlan = VLAN.query.filter_by(id=vlanid).first()
+		return render_template('vlans_delete.html', vlan=vlan)
+	else:
+		vlan = VLAN(int(request.form['vlanid']))
+		dbo.session.add(vlan)
+		dbo.session.commit()
+
+		return redirect('/vlans')
 
 
 # Subnets
