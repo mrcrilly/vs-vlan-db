@@ -11,24 +11,18 @@
 				<form role="form">
 					<div class="form-group">
 						<label for="vlanId">VLAN ID</label>
-						<input class="form-control" id="vlanId" placeholder="VLAN ID">
+						<input class="form-control" id="vlanId" placeholder="VLAN ID" value="{{vlan.id}}">
 					</div>
 					<div class="form-group">
 						<label for="subnet">Subnet (Optional)</label>
 						<select class="form-control" id="subnet">
-							<option>10.8.0.0/16</option>
-							<option>10.8.24.0/24</option>
-							<option>10.24.0.0/16</option>
+							<option>N/A</option>
 						</select>
 					</div>
 					<div class="form-group">
 						<label for="site">Site (Optional)</label>
 						<select multiple class="form-control" id="site">
-							<option>London 01</option>
-							<option>London 02</option>
-							<option>Paris 01</option>
-							<option>Belgium 01</option>
-							<option>New York 01</option>
+							<option>N/A</option>
 						</select>
 					</div>
 					<div class="checkbox">

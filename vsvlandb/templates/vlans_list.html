@@ -18,7 +18,6 @@
 						<table class="table table-striped">
 							<thead>
 								<tr>
-									<th>#</th>
 									<th>VLAN</th>
 									<th>Site</th>
 									<th>Subnet</th>
@@ -28,8 +27,7 @@
 							<tbody>
 							{% for vlan in vlans %}
 								<tr>
-									<td>{{vlan.id}}</td>
-									<td>{{vlan.vlanid}}</td>
+									<td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlanid}}</a></td>
 									<td>N/A</td>
 									<td>N/A</td>
 									<td>N/A</td>
