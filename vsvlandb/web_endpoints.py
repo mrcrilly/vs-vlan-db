@@ -7,9 +7,12 @@ from flask import redirect, request, render_template, url_for
 # Root/Index
 @app.route('/')
 def index():
-	return render_template('index.html')
-
-
+	lists = {
+		'vlans': VLAN.query.all(),
+		'subnets': Subnet.query.all(),
+		'sites': Site.query.all()
+	}
+	return render_template('index.html', lists=lists)
 
 # VLANS
 @app.route('/vlans')
@@ -22,13 +25,11 @@ def vlans_add():
 	if request.method == 'GET':
 		return render_template('vlans_add.html')
 	else:
-		print "Got POST"
-
-		vlan = VLAN(request.form['vlanId'])
+		vlan = VLAN(request.form['vlanid'])
 		dbo.session.add(vlan)
 		dbo.session.commit()
 
-		return redirect(url_for('/vlans'))
+		return redirect('/vlans')
 
 @app.route('/vlans/edit/<int:vlanid>')
 def vlans_edit(vlanid):
@@ -42,11 +43,19 @@ def vlans_delete(vlanid):
 # Subnets
 @app.route('/subnets')
 def subnets():
-	return render_template('subnets_list.html')
+	subnets = Subnet.query.all()
+	return render_template('subnets_list.html', subnets=subnets)
 
-@app.route('/subnets/add')
+@app.route('/subnets/add', methods=['GET', 'POST'])
 def subnets_add():
-	return render_template('subnets_add.html')
+	if request.method == 'GET':
+		return render_template('subnets_add.html')
+	else:
+		subnet = Subnet(request.form['subnet'])
+		dbo.session.add(subnet)
+		dbo.session.commit()
+
+		return redirect('/subnets')
 
 @app.route('/subnets/edit/<int:subnetid>')
 def subnets_edit(subnetid):
@@ -61,11 +70,19 @@ def subnets_delete(subnetid):
 #Sites
 @app.route('/sites')
 def sites():
-	return render_template('sites_list.html')
+	sites = Site.query.all()
+	return render_template('sites_list.html', sites=sites)
 
-@app.route('/sites/add')
+@app.route('/sites/add', methods=['GET', 'POST'])
 def sites_add():
-	return render_template('sites_add.html')
+	if request.method == 'GET':
+		return render_template('sites_add.html')
+	else:
+		site = Site(request.form['site'])
+		dbo.session.add(site)
+		dbo.session.commit()
+
+		return redirect('/sites')
 
 @app.route('/sites/edit/<int:siteid>')
 def sites_edit(siteid):
