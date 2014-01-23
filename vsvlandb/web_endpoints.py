@@ -2,42 +2,74 @@
 from vsvlandb import app, dbo
 from vsvlandb.models import VLAN, Subnet, Site
 
-from flask import redirect, request, render_template, url_for
+from flask import redirect, request, render_template, url_for, flash
 
 import re
 
 # Root/Index
 @app.route('/')
 def index():
-	lists = {
+	data = {
 		'vlans': VLAN.query.limit(10).all(),
 		'subnets': Subnet.query.limit(10).all(),
 		'sites': Site.query.limit(10).all()
 	}
 
-	return render_template('index.html', lists=lists)
+	return render_template('index.html', lists=data)
 
 # VLANS
 @app.route('/vlans')
 def vlans():
-    lists = {
+    data = {
         'active': (VLAN.query.filter_by(isactive=True).count(), VLAN.query.filter_by(isactive=True)),
         'inactive': (VLAN.query.filter_by(isactive=False).count(), VLAN.query.filter_by(isactive=False))
     }
 
-    print lists
-    return render_template('vlans_list.html', vlans=lists)
+    return render_template('vlans_list.html', vlans=data)
 
 @app.route('/vlans/add', methods=['GET', 'POST'])
 def vlans_add():
-	if request.method == 'GET':
-		return render_template('vlans_add.html')
-	else:
-		vlan = VLAN(int(request.form['vlanid']))
-		dbo.session.add(vlan)
-		dbo.session.commit()
+    if request.method == 'GET':
+        data = {
+            'error': {}
+        }
 
-		return redirect('/vlans')
+        subnets = Subnet.query.filter_by(isactive=True)
+        if subnets.count() <= 0:
+            data['error']['noparents'] = True
+            flash(u"No subnets defined. You can't create a VLAN without a subnet.", category='danger')
+        else:
+            data['subnets'] = subnets
+
+        sites = Site.query.filter_by(isactive=True)
+        if sites.count() <= 0:
+            data['error']['noparents'] = True
+            flash(u"No sites defined. You can't have a VLAN without a site.", category='danger')
+        else:
+            data['sites'] = sites
+
+        vlans = VLAN.query.filter_by(isactive=True)
+        if vlans.count() >= 1:
+            data['vlans'] = vlans
+
+        return render_template('vlans_add.html', data=data)
+
+    if request.method == 'POST':
+        vlanid = request.form['vlandid']
+        subnetid = request.form['subnet']
+        siteid = request.form['site']
+        isactive = request.form['active']
+        enhanced = request.form['enhanced']
+
+
+        vlan_re = re.match(r'^[0-9]{1,5}$', vlanid)
+
+        if vlan_re:
+            vlan = VLAN()
+            dbo.session.add(vlanid)
+            dbo.session.commit()
+
+        return redirect('/vlans')
 
 @app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_edit(vlanid):
