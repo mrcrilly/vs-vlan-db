@@ -20,7 +20,7 @@
 						<label for="subnet">Subnet (Optional)</label>
 						<select multiple class="form-control" id="subnet" name="subnet">
                         {% for subnet in data['subnets'] %}
-                            <option>{{subnet.subnet}}/{{subnet.cidr}}</option>
+                            <option value="{{subnet.id}}">{{subnet.subnet}}</option>
                         {% endfor %}
 						</select>
 					</div>
@@ -28,7 +28,7 @@
 						<label for="site">Site (Optional)</label>
 						<select multiple class="form-control" id="site" name="site">
 						{% for site in data['sites'] %}
-                            <option>{{site.name}}</option>
+                            <option value="{{site.id}}">{{site.name}}</option>
                         {% endfor %}
 						</select>
 					</div>
