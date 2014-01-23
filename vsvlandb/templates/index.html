@@ -31,7 +31,11 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#vlans" data-toggle="collapse" data-parent="#accordion">
-								Latest VLANs
+								{% if lists['vlans'] %}
+                                    10 Latest VLANs
+                                {% else %}
+                                    No VLAN Data
+                                {% endif %}
 							</a>
 						</h4>
 				</div>
@@ -40,23 +44,33 @@
 						<table class="table table-striped">
 							<thead>
 								<tr>
-									<th>#</th>
 									<th>VLAN</th>
-									<th>Site</th>
 									<th>Subnet</th>
-									<th>OTV</th>
+									<th>Site</th>
+									<th>Enhanced</th>
+                                    <th>Active</th>
 								</tr>
 							</thead>
 							<tbody>
-							{% for vlan in lists['vlans'] %}
-								<tr>
-									<td>{{vlan.id}}</td>
-									<td>{{vlan.vlanid}}</td>
-									<td>N/A</td>
-									<td>N/A</td>
-									<td>N/A</td>
-								</tr>
-							{% endfor %}
+                            {% if lists['vlans'] %}
+    							{% for vlan in lists['vlans'] %}
+    								<tr>
+    									<td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlan}}</a></td>
+    									<td><a href="/subnets/edit/{{vlan.subnet.id}}">{{vlan.subnet.subnet}}</a></td>
+    									<td><a href="/sites/edit/{{vlan.site.id}}">{{vlan.site.name}}</a></td>
+    									<td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
+                                        <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.isactive}}</a></td>
+    								</tr>
+    							{% endfor %}
+                            {% else %}
+                               <tr>
+                                   <td>N/D</td>
+                                   <td>N/D</td>
+                                   <td>N/D</td>
+                                   <td>N/D</td>
+                                   <td>N/D</td>
+                               </tr>
+                            {% endif %}
 							</tbody>
 						</table>
 					</div>
@@ -67,7 +81,11 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#subnets" data-toggle="collapse" data-parent="#accordion">
-								Latest Subnets
+                                {% if lists['subnets'] %}
+                                    10 Latest Subnets
+                                {% else %}
+                                    No Subnet Data
+                                {% endif %}
 							</a>
 						</h4>
 				</div>
@@ -76,7 +94,6 @@
 						<table class="table table-striped">
 							<thead>
 								<tr>
-									<th>#</th>
 									<th>Subnet</th>
 									<th>Netmask</th>
 									<th>Cidr</th>
@@ -86,15 +103,27 @@
 								</tr>
 							</thead>
 							<tbody>
-							{% for subnet in lists['subnets'] %}
-								<tr>
-									<td>{{subnet.id}}</td>
-									<td>{{subnet.subnet}}</td>
-									<td>N/A</td>
-									<td>N/A</td>
-									<td>N/A</td>
-								</tr>
-							{% endfor %}
+                            {% if lists['subnets'] %}
+    							{% for subnet in lists['subnets'] %}
+    								<tr>
+    									<td><a href="/subnets/edit/{{subnet.id}}">{{subnet.subnet}}</a></td>
+    									<td><a href="/subnets/edit/{{subnet.id}}">{{subnet.netmask}}</a></td>
+    									<td><a href="/subnets/edit/{{subnet.id}}">{{subnet.cidr}}</a></td>
+    									<td><a href="/subnets/edit/{{subnet.id}}">{{subnet.site.name}}</a></td>
+                                        <td><a href="/subnets/edit/{{subnet.id}}">N/A</a></td>
+                                        <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.isactive}}</a></td>
+    								</tr>
+    							{% endfor %}
+                            {% else %}
+                                 <tr>
+                                     <td>N/D</td>
+                                     <td>N/D</td>
+                                     <td>N/D</td>
+                                     <td>N/D</td>
+                                     <td>N/D</td>
+                                     <td>N/D</td>                                     
+                                 </tr>
+                            {% endif %}
 							</tbody>
 						</table>
 					</div>
@@ -105,7 +134,11 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#sites" data-toggle="collapse" data-parent="#accordion">
-								Latest Sites
+                            {% if lists['sites'] %}
+                                    10 Latest Sites
+                                {% else %}
+                                    No Site Data
+                                {% endif %}
 							</a>
 						</h4>
 				</div>
@@ -114,22 +147,33 @@
 						<table class="table table-striped">
 							<thead>
 								<tr>
-									<th>#</th>
 									<th>Name</th>
 									<th>Description</th>
+                                    <th>VLANs</th>
+                                    <th>Subnets</th>
 									<th>Active</th>
 								</tr>
 							</thead>
 							<tbody>
-							{% for site in lists['sites'] %}
-								<tr>
-									<td>{{site.id}}</td>
-									<td>{{site.sitename}}</td>
-									<td>N/A</td>
-									<td>N/A</td>
-									<td>N/A</td>
-								</tr>
-							{% endfor %}
+                            {% if lists['sites'] %}
+    							{% for site in lists['sites'] %}
+    								<tr>
+    									<td><a href="/sites/edit/{{site.id}}">{{site.name}}</a></td>
+                                        <td><a href="/sites/edit/{{site.id}}">{{site.description}}</a></td>
+                                        <td><a href="/vlans">{{site.vlan|count}}</a></td>
+    									<td><a href="/subnets">{{site.subnet|count}}</a></td>
+    									<td><a href="/sites/edit/{{site.id}}">{{site.isactive}}</a></td>
+    								</tr>
+    							{% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                </tr>
+                            {% endif %}
 							</tbody>
 						</table>
 					</div>

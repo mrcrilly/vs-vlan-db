@@ -10,17 +10,23 @@ import re
 @app.route('/')
 def index():
 	lists = {
-		'vlans': VLAN.query.all(),
-		'subnets': Subnet.query.all(),
-		'sites': Site.query.all()
+		'vlans': VLAN.query.limit(10).all(),
+		'subnets': Subnet.query.limit(10).all(),
+		'sites': Site.query.limit(10).all()
 	}
+
 	return render_template('index.html', lists=lists)
 
 # VLANS
 @app.route('/vlans')
 def vlans():
-	vlans = VLAN.query.all()
-	return render_template('vlans_list.html', vlans=vlans)
+    lists = {
+        'active': (VLAN.query.filter_by(isactive=True).count(), VLAN.query.filter_by(isactive=True)),
+        'inactive': (VLAN.query.filter_by(isactive=False).count(), VLAN.query.filter_by(isactive=False))
+    }
+
+    print lists
+    return render_template('vlans_list.html', vlans=lists)
 
 @app.route('/vlans/add', methods=['GET', 'POST'])
 def vlans_add():
@@ -62,8 +68,11 @@ def vlans_delete(vlanid):
 # Subnets
 @app.route('/subnets')
 def subnets():
-	subnets = Subnet.query.all()
-	return render_template('subnets_list.html', subnets=subnets)
+    lists = {
+        'active': (Subnet.query.filter_by(isactive=True).count(), Subnet.query.filter_by(isactive=True)),
+        'inactive': (Subnet.query.filter_by(isactive=False).count(), Subnet.query.filter_by(isactive=False)),
+    }
+    return render_template('subnets_list.html', subnets=lists)
 
 @app.route('/subnets/add', methods=['GET', 'POST'])
 def subnets_add():
@@ -89,8 +98,11 @@ def subnets_delete(subnetid):
 #Sites
 @app.route('/sites')
 def sites():
-	sites = Site.query.all()
-	return render_template('sites_list.html', sites=sites)
+    lists = {
+        'active': (Site.query.filter_by(isactive=True).count(), Site.query.filter_by(isactive=True)),
+        'inactive': (Site.query.filter_by(isactive=False).count(), Site.query.filter_by(isactive=False)),
+    }
+    return render_template('sites_list.html', sites=lists)
 
 @app.route('/sites/add', methods=['GET', 'POST'])
 def sites_add():

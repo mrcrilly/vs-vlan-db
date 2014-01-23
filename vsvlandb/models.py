@@ -7,7 +7,7 @@ import datetime
 class VLAN(dbo.Model):
 	id = dbo.Column(dbo.Integer, primary_key=True)
 
-	vlan = dbo.Column(dbo.String(5), unique=True)
+	vlan = dbo.Column(dbo.String(5))
 	enhanced = dbo.Column(dbo.Boolean)
 	impact = dbo.Column(dbo.String(5))
 	isactive = dbo.Column(dbo.Boolean)
@@ -36,7 +36,7 @@ class VLAN(dbo.Model):
 class Subnet(dbo.Model):
 	id = dbo.Column(dbo.Integer, primary_key=True)
 
-	subnet = dbo.Column(dbo.String(30), unique=True)
+	subnet = dbo.Column(dbo.String(30))
 	netmask = dbo.Column(dbo.String(30))
 	cidr = dbo.Column(dbo.String(30))
 	size = dbo.Column(dbo.Integer)

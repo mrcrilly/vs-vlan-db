@@ -8,7 +8,11 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#activetable" data-toggle="collapse" data-parent="#accordion">
-								Active Sites
+								{% if sites['active'][0] >= 1 %}
+                                    Active Sites
+                                {% else %}
+                                    No Active Sites
+                                {% endif %}
 							</a>
 						</h4>
 				</div>
@@ -17,21 +21,33 @@
 						<table class="table table-striped">
 							<thead>
 								<tr>
-									<th>#</th>
 									<th>Name</th>
 									<th>Description</th>
+                                    <th>VLANs</th>
+                                    <th>Subnets</th>
 									<th>Active</th>
 								</tr>
 							</thead>
 							<tbody>
-							{% for site in sites %}
-								<tr>
-									<td>{{ site.id }}</td>
-									<td>{{ site.sitename }}</td>
-									<td>N/A</td>
-									<td>N/A</td>
-								</tr>
-							{% endfor %}
+                            {% if sites['active'][0] >= 1 %}
+    							{% for site in sites['active'][1] %}
+    								<tr>
+    									<td><a href="/sites/edit/{{site.id}}">{{site.name}}</a></td>
+    									<td><a href="/sites/edit/{{site.id}}">{{site.description}}</a></td>
+                                        <td><a href="/vlans">{{site.vlan|count}}</a></td>
+                                        <td><a href="/subnets">{{site.subnet|count}}</a></td>
+                                        <td><a href="/sites/edit/{{site.id}}">{{site.isactive}}</a></td>
+    								</tr>
+    							{% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                </tr>
+                            {% endif %}
 							</tbody>
 						</table>
 					</div>
@@ -42,7 +58,11 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#inactivetable" data-toggle="collapse" data-parent="#accordion">
-								Inactive Sites
+								{% if sites['inactive'][0] >= 1 %}
+                                    Inactive Sites
+                                {% else %}
+                                    No Inactive Sites
+                                {% endif %}
 							</a>
 						</h4>
 				</div>
@@ -51,14 +71,33 @@
 						<table class="table table-striped">
 							<thead>
 								<tr>
-									<th>#</th>
-									<th>Name</th>
-									<th>Description</th>
-									<th>Active</th>
-								</tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>VLANs</th>
+                                    <th>Subnets</th>
+                                    <th>Active</th>
+                                </tr>
 							</thead>
 							<tbody>
-								
+							{% if sites['inactive'][0] >= 1 %}
+                                {% for site in sites['inactive'][1] %}
+                                    <tr>
+                                        <td><a href="/sites/edit/{{site.id}}">{{site.name}}</a></td>
+                                        <td><a href="/sites/edit/{{site.id}}">{{site.description}}</a></td>
+                                        <td><a href="/vlans">{{site.vlan|count}}</a></td>
+                                        <td><a href="/subnets">{{site.subnet|count}}</a></td>
+                                        <td><a href="/sites/edit/{{site.id}}">{{site.isactive}}</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                    <td>N/D</td>
+                                </tr>
+                            {% endif %}
 							</tbody>
 						</table>
 					</div>
