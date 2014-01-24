@@ -9,6 +9,9 @@
 			</div>
 			<div class="panel-body">
 				<form role="form" action="/subnets/add" method="post" name="subnetadd">
+					{% if data['error']['noparents'] %}
+                    <fieldset disabled>
+                    {% endif %}
 					<div class="form-group">
 						<label for="subnet">Subnet</label>
 						<input class="form-control" id="subnet" placeholder="Subnet" name="subnet">
@@ -18,7 +21,7 @@
 						<input class="form-control" id="netmask" placeholder="Netmask/CIDR" name="network">
 					</div>
 					<div class="form-group">
-						<label for="site">Site (Optional)</label>
+						<label for="site">Site</label>
 						<select multiple class="form-control" id="site" name="site">
 							<option>London 01</option>
 							<option>London 02</option>
@@ -33,7 +36,10 @@
 						</label>
 					</div>
 					<br />
-					<button type="submit" class="btn btn-success"">Create</button>
+					<button type="submit" class="btn btn-success">Create</button>
+					{% if data['error']['noparents'] %}
+                    </fieldset>
+                    {% endif %}
 				</form>
 			</div>
 		</div>
