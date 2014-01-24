@@ -8,11 +8,8 @@
 					Edit VLAN
 			</div>
 			<div class="panel-body">
-                <form role="form" action="/vlans/add" method="post" name="addvlan">
+                <form role="form" action="/vlans/edit/{{form.vlanid}}" method="post" name="addvlan">
                     {{ form.hidden_tag() }}
-                    {% if data['error'] %}
-                    <fieldset disabled>
-                    {% endif %}
                     <div class="form-group">
                         {{ form.vlanid.label(for="vlanid") }}
                         {{ form.vlanid(class="form-control") }}
@@ -34,9 +31,6 @@
                         {{ form.isactive(class="form-control") }}
                     </div>
                     <button type="submit" class="btn btn-success">Create</button>
-                    {% if data['error'] %}
-                    </fieldset>
-                    {% endif %}
                 </form>
 			</div>
 		</div>
