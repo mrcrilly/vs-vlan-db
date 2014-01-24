@@ -20,7 +20,7 @@ class VLAN(dbo.Model):
 
 	added = dbo.Column(dbo.DateTime)
 
-	def __init__(self, vlanid, subnet, site, enhanced=False, impact=None, isactive=True):
+	def __init__(self, vlanid, subnet=None, site=None, enhanced=False, impact=None, isactive=True):
 		self.vlan = vlanid
 		self.enhanced = enhanced
 		self.isactive = isactive
