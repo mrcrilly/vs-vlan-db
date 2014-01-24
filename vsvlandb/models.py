@@ -45,7 +45,7 @@ class Subnet(dbo.Model):
 	site_id = dbo.Column(dbo.Integer, dbo.ForeignKey('site.id'))
 	site = dbo.relationship('Site', backref='subnet', lazy='joined')
 
-	def __init__(self, subnet, netmask, site, cidr=None, isactive=True):
+	def __init__(self, subnet, netmask, cidr=None, site=None, isactive=True):
 		self.subnet = subnet
 		self.netmask = netmask
 		self.cidr = cidr

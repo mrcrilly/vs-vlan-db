@@ -17,17 +17,11 @@
 						<input class="form-control" id="subnet" placeholder="Subnet" name="subnet">
 					</div>
 					<div class="form-group">
-						<label for="netmask">Netmask/CIDR</label>
-						<input class="form-control" id="netmask" placeholder="Netmask/CIDR" name="network">
-					</div>
-					<div class="form-group">
 						<label for="site">Site</label>
 						<select multiple class="form-control" id="site" name="site">
-							<option>London 01</option>
-							<option>London 02</option>
-							<option>Paris 01</option>
-							<option>Belgium 01</option>
-							<option>New York 01</option>
+						{% for site in data['sites'] %}
+	                        <option value="{{site.id}}">{{site.name}}</option>
+                        {% endfor %}
 						</select>
 					</div>
 					<div class="checkbox">
@@ -45,28 +39,7 @@
 		</div>
 	</div>
 	<div class="col-lg-8">
-		<div class="panel panel-default">
-			<div class="panel-heading">Last Ten Subnets</div>
-				<div class="panel-body">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>Subnet</th>
-								<th>Netmask</th>
-								<th>Cidr</th>
-								<th>Site</th>
-								<th>VLAN Count</th>
-								<th>Active</th>
-							</tr>
-						</thead>
-						<tbody>
-
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
+		{% include "topten_side.html" %}
 	</div>
 </div>
 {% endblock %}

@@ -23,7 +23,6 @@
 								<tr>
 									<th>Subnet</th>
 									<th>Netmask</th>
-									<th>Cidr</th>
 									<th>Site</th>
 									<th>VLANs</th>
 									<th>Active</th>
@@ -35,7 +34,6 @@
     								<tr>
     									<td><a href="/subnets/edit/{{subnet.id}}">{{subnet.subnet}}</a></td>
                                         <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.netmask}}</a></td>
-                                        <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.cidr}}</a></td>
                                         <td><a href="/sites/edit/{{subnet.site.id}}">{{subnet.site.name}}</a></td>
                                         <td><a href="/vlans">{{subnet.vlan|count}}</a></td>
                                         <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.isactive}}</a></td>
@@ -43,7 +41,6 @@
     							{% endfor %}
                             {% else %}
                                 <tr>
-                                    <td>N/D</td>
                                     <td>N/D</td>
                                     <td>N/D</td>
                                     <td>N/D</td>

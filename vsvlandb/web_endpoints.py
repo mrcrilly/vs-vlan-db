@@ -5,6 +5,8 @@ from vsvlandb.models import VLAN, Subnet, Site
 from flask import redirect, request, render_template, url_for, flash
 
 import re
+import ipaddress
+import sys
 
 # Root/Index
 @app.route('/')
@@ -44,8 +46,6 @@ def vlans_add():
         return render_template('vlans_add.html', data=data)
 
     if request.method == 'POST':
-        print request.form
-
         data = {
             'error': {}
         }
@@ -62,6 +62,7 @@ def vlans_add():
             else:
                 data['error']['badvlanid'] = True
                 flash(u"Bad VLAN ID: {}. Please try again.".format(vlanid), category='danger')
+                return redirect('/vlans/add')
         else:
             data['error']['badvlanid'] = True
             flash(u"Missing vLAN ID. Please try again.", category='danger')
@@ -80,8 +81,6 @@ def vlans_add():
         else:
             subnets = False
 
-        print "Subnets: {}".format(subnets)
-
         if 'site' in request.form:
             selections = request.form.getlist('site')
             for selection in selections:
@@ -95,15 +94,11 @@ def vlans_add():
         else:
             sites = False
 
-        print "Sites: {}".format(sites)
-
         if 'active' in request.form:
             if re.match(r'^on$', request.form['active']):
                 isactive = True
             else:
                 isactive = False
-
-        print "Active: {}".format(isactive)
 
         if 'enhanced' in request.form:
             if re.match(r'^on$', request.form['enhanced']):
@@ -111,39 +106,29 @@ def vlans_add():
             else:
                 enhanced = False
 
-        print "Enhanced: {}".format(enhanced)
-
         if sites and subnets:
-            print "sites and subnets"
             for site in sites:
                 for subnet in subnets:
-                    print "Adding {0} to {1} in {2} that is active:{3}, enhanced:{4}".format(vlanid,subnet,site,isactive,enhanced)
                     vlan = VLAN(vlanid, subnet=subnet, site=site, isactive=isactive, enhanced=enhanced)
                     dbo.session.add(vlan)
                     dbo.session.commit()
                     flash("Added {0} to {1} in {2}".format(vlanid, subnet.subnet, site.name), category='success')
 
         if sites and not subnets:
-            print "sites not subnets"
             for site in sites:
-                print "Adding {0} in {1} that is active:{2}, enhanced:{3}".format(vlanid,site,isactive,enhanced)
                 vlan = VLAN(vlanid, subnet=None, site=site, isactive=isactive, enhanced=enhanced)
                 dbo.session.add(vlan)
                 dbo.session.commit()
                 flash("Added {0} in {1}".format(vlanid, site.name), category='success')
         
         if subnets and not sites:
-            print "subnets not sites"
             for subnet in subnets:
-                print "Adding {0} to {1} that is active:{2}, enhanced:{3}".format(vlanid,subnet,isactive,enhanced)
                 vlan = VLAN(vlanid, subnet=subnet, site=None, isactive=isactive, enhanced=enhanced)
                 dbo.session.add(vlan)
                 dbo.session.commit()
                 flash("Added {0} to {1}".format(vlanid, subnet.subnet), category='success')
         
         if not sites and not subnets:
-            print "not sites not subnets"
-            print "Adding {0} that is active:{1}, enhanced:{2}".format(vlanid,isactive,enhanced)
             vlan = VLAN(vlanid, subnet=None, site=None, isactive=isactive, enhanced=enhanced)
             dbo.session.add(vlan)
             dbo.session.commit()
@@ -158,7 +143,7 @@ def vlans_edit(vlanid):
         vlan = VLAN.query.filter_by(id=int(vlanid)).first()
         return render_template('vlans_edit.html', vlan=vlan)
     
-    if request.method== 'POST':
+    if request.method == 'POST':
         vlan = VLAN(int(request.form['vlanid']))
         dbo.session.add(vlan)
         dbo.session.commit()
@@ -190,13 +175,79 @@ def subnets():
 @app.route('/subnets/add', methods=['GET', 'POST'])
 def subnets_add():
     if request.method == 'GET':
-        return render_template('subnets_add.html')
-    else:
-        subnet = Subnet(request.form['subnet'])
-        dbo.session.add(subnet)
-        dbo.session.commit()
+        data = {
+            'error': {}
+        }
 
-        return redirect('/subnets')
+        data['subnets'] = Subnet.query.filter_by(isactive=True)
+        data['sites'] = Site.query.filter_by(isactive=True)
+        data['vlans'] = VLAN.query .filter_by(isactive=True)
+
+        return render_template('subnets_add.html', data=data)
+    else:
+        subnet = None
+        netmask = None
+        sites = []
+        isactive = False
+
+        if 'subnet' in request.form:
+            ip = None
+            error = False
+
+            try:
+                ip = ipaddress.IPv4Network(request.form['subnet'].decode())
+            except ipaddress.AddressValueError:
+                flash(u"You provided an invalid IP address", category='danger')
+                error = True
+            except ipaddress.NetmaskValueError:
+                flash(u"You provided an invalid netmask.", category='danger')
+                error = True
+            except:
+                flash(u"Exception caught: {}".format(sys.exc_info()[0]), category='danger')
+                error = True
+
+            if error:
+                return redirect('/subnets/add')
+            else:
+                subnet = ip
+        else:
+            flash(u"You need to supply a subnet to add a subnet.", category='danger')
+            return redirect('/subnets/add')
+
+        if 'site' in request.form:
+            selections = request.form.getlist('site')
+            for selection in selections:
+                if re.match(r'^[0-9]{1,}$', selection):
+                    site = Site.query.filter_by(id=selection).limit(1)
+                    if site.count() >= 1:
+                        sites.append(site.first())
+                else:
+                    data['error']['badsiteid'] = True
+                    flash(u"Bad Site ID: {}. Please make your selection again.".format(selection), category='danger')
+        else:
+            sites = False
+
+        if 'active' in request.form:
+            if re.match(r'^on$', request.form['active']):
+                isactive = True
+            else:
+                isactive = False
+
+        if sites:
+            for site in sites:
+                newsubnet = Subnet(subnet=str(subnet), netmask=str(subnet.netmask), cidr=subnet.prefixlen, site=site, isactive=isactive)
+                dbo.session.add(newsubnet)
+                dbo.session.commit()
+
+                flash(u"Added subnet {0} to {1}".format(str(subnet), site), category='success')
+        else:
+            newsubnet = Subnet(subnet=str(subnet), netmask=str(subnet.netmask), cidr=subnet.prefixlen, site=None, isactive=isactive)
+            dbo.session.add(newsubnet)
+            dbo.session.commit()
+
+            flash(u"Added subnet {0}".format(str(subnet)), category='success')
+
+    return redirect('/subnets')
 
 @app.route('/subnets/edit/<int:subnetid>')
 def subnets_edit(subnetid):
