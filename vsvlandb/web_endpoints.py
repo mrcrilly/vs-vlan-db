@@ -34,19 +34,8 @@ def vlans_add():
             'error': {}
         }
 
-        subnets = Subnet.query.filter_by(isactive=True)
-        if subnets.count() <= 0:
-            data['error']['noparents'] = True
-            flash(u"No subnets defined. You can't create a VLAN without a subnet.", category='danger')
-        else:
-            data['subnets'] = subnets
-
-        sites = Site.query.filter_by(isactive=True)
-        if sites.count() <= 0:
-            data['error']['noparents'] = True
-            flash(u"No sites defined. You can't have a VLAN without a site.", category='danger')
-        else:
-            data['sites'] = sites
+        data['subnets'] = Subnet.query.filter_by(isactive=True)
+        data['sites'] = Site.query.filter_by(isactive=True)
 
         vlans = VLAN.query.filter_by(isactive=True)
         if vlans.count() >= 1:
@@ -55,12 +44,14 @@ def vlans_add():
         return render_template('vlans_add.html', data=data)
 
     if request.method == 'POST':
+    	print request.form
+
         data = {
             'error': {}
         }
 
         vlanid = None 
-        subnets = [] 
+        subnets = []
         sites = []
         isactive = False
         enhanced = False
@@ -70,7 +61,11 @@ def vlans_add():
                 vlanid = request.form['vlanid']
             else:
                 data['error']['badvlanid'] = True
-                flash(u"Bad VLAN ID. Please try again.", category='danger')
+                flash(u"Bad VLAN ID: {}. Please try again.".format(vlanid), category='danger')
+        else:
+        	data['error']['badvlanid'] = True
+        	flash(u"Missing vLAN ID. Please try again.", category='danger')
+        	return redirect('/vlans/add')
 
         if 'subnet' in request.form:
             selections = request.form.getlist('subnet')
@@ -81,7 +76,11 @@ def vlans_add():
                         subnets.append(subnet.first())
                 else:
                     data['error']['badsubnetid'] = True
-                    flash(u"Bad Subnet ID. Please make your selection again.", category='danger')
+                    flash(u"Bad Subnet ID: {}. Please make your selection again.".format(selection), category='danger')
+        else:
+        	subnets = False
+
+        print "Subnets: {}".format(subnets)
 
         if 'site' in request.form:
             selections = request.form.getlist('site')
@@ -92,27 +91,64 @@ def vlans_add():
                         sites.append(site.first())
                 else:
                     data['error']['badsiteid'] = True
-                    flash(u"Bad Site ID. Please make your selection again.", category='danger')   
+                    flash(u"Bad Site ID: {}. Please make your selection again.".format(selection), category='danger')   
+        else:
+        	sites = False
+
+        print "Sites: {}".format(sites)
 
         if 'active' in request.form:
-            if re.match(r'^(on|off)$', request.form['active']):
+            if re.match(r'^on$', request.form['active']):
                 isactive = True
             else:
                 isactive = False
 
+        print "Active: {}".format(isactive)
+
         if 'enhanced' in request.form:
-            print "enhanced"
-            if re.match(r'^(on|off)$', request.form['enhanced']):
+            if re.match(r'^on$', request.form['enhanced']):
                 enhanced = True
             else:
                 enhanced = False
 
-        for site in sites:
-            for subnet in subnets:
-                print "{0}: {1}: {2}".format(vlanid, subnet, site)
-                vlan = VLAN(vlanid, subnet, site, isactive, enhanced)
-                dbo.session.add(vlan)
-                dbo.session.commit()
+        print "Enhanced: {}".format(enhanced)
+
+        if sites and subnets:
+        	print "sites and subnets"
+	        for site in sites:
+	            for subnet in subnets:
+	            	print "Adding {0} to {1} in {2} that is active:{3}, enhanced:{4}".format(vlanid,subnet,site,isactive,enhanced)
+	                vlan = VLAN(vlanid, subnet=subnet, site=site, isactive=isactive, enhanced=enhanced)
+	                dbo.session.add(vlan)
+	                dbo.session.commit()
+	                flash("Added {0} to {1} in {2}".format(vlanid, subnet.subnet, site.name), category='success')
+
+		if sites and not subnets:
+			print "sites not subnets"
+			for site in sites:
+				print "Adding {0} in {1} that is active:{2}, enhanced:{3}".format(vlanid,site,isactive,enhanced)
+				vlan = VLAN(vlanid, subnet=None, site=site, isactive=isactive, enhanced=enhanced)
+				dbo.session.add(vlan)
+				dbo.session.commit()
+				flash("Added {0} in {1}".format(vlanid, site.name), category='success')
+        
+        if subnets and not sites:
+			print "subnets not sites"
+			for subnet in subnets:
+				print "Adding {0} to {1} that is active:{2}, enhanced:{3}".format(vlanid,subnet,isactive,enhanced)
+				vlan = VLAN(vlanid, subnet=subnet, site=None, isactive=isactive, enhanced=enhanced)
+				dbo.session.add(vlan)
+				dbo.session.commit()
+				flash("Added {0} to {1}".format(vlanid, subnet.subnet), category='success')
+        
+        if not sites and not subnets:
+        	print "not sites not subnets"
+        	print "Adding {0} that is active:{1}, enhanced:{2}".format(vlanid,isactive,enhanced)
+        	vlan = VLAN(vlanid, subnet=None, site=None, isactive=isactive, enhanced=enhanced)
+        	dbo.session.add(vlan)
+        	dbo.session.commit()
+        	flash("Added {}".format(vlanid), category='success')
+
 
     return redirect('/vlans')
 
