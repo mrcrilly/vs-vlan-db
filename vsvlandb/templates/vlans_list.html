@@ -10,10 +10,10 @@
 						<h4 class="panel-title">
 							<a href="#activetable" data-toggle="collapse" data-parent="#accordion">
 								{% if vlans['active'][0] >= 1 %}
-                                    Active VLANs
-                                {% else %}
-                                    No Active VLANs
-                                {% endif %}
+                    Active VLANs
+                {% else %}
+                    No Active VLANs
+                {% endif %}
 							</a>
 						</h4>
 				</div>
@@ -22,33 +22,33 @@
 						<table class="table table-striped">
 							<thead>
 								<tr>
-                                    <th>VLAN</th>
-                                    <th>Subnet</th>
-                                    <th>Site</th>
-                                    <th>Enhanced</th>
-                                    <th>Active</th>
-                                </tr>
+                  <th>VLAN</th>
+                  <th>Subnet</th>
+                  <th>Site</th>
+                  <th>Enhanced</th>
+                  <th>Active</th>
+              </tr>
 							</thead>
 							<tbody>
 							{% if vlans['active'][0] >= 1 %}
-                                {% for vlan in vlans['active'][1] %}
-                                    <tr>
-                                        <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlan}}</a></td>
-                                        <td><a href="/subnets/edit/{{vlan.subnet.id}}">{{vlan.subnet.subnet}}</a></td>
-                                        <td><a href="/sites/edit/{{vlan.site.id}}">{{vlan.site.name}}</a></td>
-                                        <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
-                                        <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.isactive}}</a></td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                               <tr>
-                                   <td>N/D</td>
-                                   <td>N/D</td>
-                                   <td>N/D</td>
-                                   <td>N/D</td>
-                                   <td>N/D</td>
-                               </tr>
-                            {% endif %}
+                  {% for vlan in vlans['active'][1] %}
+                      <tr>
+                          <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlan}}</a></td>
+                          <td><a href="/subnets/edit/{{vlan.subnet.id}}">{{vlan.subnet.subnet or "None"}}</a></td>
+                          <td><a href="/sites/edit/{{vlan.site.id}}">{{vlan.site.name or "None"}}</a></td>
+                          <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
+                          <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.isactive}}</a></td>
+                      </tr>
+                  {% endfor %}
+              {% else %}
+                 <tr>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                 </tr>
+              {% endif %}
 							</tbody>
 						</table>
 					</div>
