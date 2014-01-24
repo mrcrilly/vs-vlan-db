@@ -8,46 +8,35 @@
 					Add New VLAN
 			</div>
 			<div class="panel-body">
-				<form role="form" action="/vlans/add" method="post" name="addvlan">
-                    {% if data['error']['noparents'] %}
+                <form role="form" action="/vlans/add" method="post" name="addvlan">
+                    {% if data['error'] %}
                     <fieldset disabled>
                     {% endif %}
-					<div class="form-group">
-						<label for="vlanId">VLAN ID</label>
-						<input class="form-control" id="vlanId" placeholder="VLAN ID" name="vlanid">
-					</div>
-					<div class="form-group">
-						<label for="subnet">Subnet (Optional)</label>
-						<select multiple class="form-control" id="subnet" name="subnet">
-                        {% for subnet in data['subnets'] %}
-                            <option value="{{subnet.id}}">{{subnet.subnet}}</option>
-                        {% endfor %}
-						</select>
-					</div>
-					<div class="form-group">
-						<label for="site">Site (Optional)</label>
-						<select multiple class="form-control" id="site" name="site">
-						{% for site in data['sites'] %}
-                            <option value="{{site.id}}">{{site.name}}</option>
-                        {% endfor %}
-						</select>
-					</div>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" name="enhanced"> Enhanced?
-						</label>
-					</div>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" name="active"> Active?
-						</label>
-					</div>
-					<br />
-					<button type="submit" class="btn btn-success">Create</button>
-                    {% if data['error']['noparents'] %}
+                    <div class="form-group">
+                        {{ form.vlanid.label(for="vlanid") }}
+                        {{ form.vlanid(size=5, class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.subnet.label(for="subnet") }}
+                        {{ form.subnet(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.site.label(for="site") }}
+                        {{ form.site(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.enhanced.label(for="enhanced") }}
+                        {{ form.enhanced(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.isactive.label(for="isactive") }}
+                        {{ form.isactive(class="form-control") }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Create</button>
+                    {% if data['error'] %}
                     </fieldset>
                     {% endif %}
-				</form>
+                </form>
 			</div>
 		</div>
 	</div>
