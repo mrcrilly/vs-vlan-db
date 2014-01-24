@@ -8,60 +8,41 @@
 					Edit VLAN
 			</div>
 			<div class="panel-body">
-				<form role="form">
-					<div class="form-group">
-						<label for="vlanId">VLAN ID</label>
-						<input class="form-control" id="vlanId" placeholder="VLAN ID" value="{{vlan.id}}">
-					</div>
-					<div class="form-group">
-						<label for="subnet">Subnet (Optional)</label>
-						<select class="form-control" id="subnet">
-							<option>N/A</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<label for="site">Site (Optional)</label>
-						<select multiple class="form-control" id="site">
-							<option>N/A</option>
-						</select>
-					</div>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox"> OTV VLAN
-						</label>
-					</div>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox"> Active?
-						</label>
-					</div>
-					<br />
-					<button type="submit" class="btn btn-success">Update</button>
-					<button type="submit" class="btn btn-danger">Cancel</button>
-				</form>
+                <form role="form" action="/vlans/add" method="post" name="addvlan">
+                    {{ form.hidden_tag() }}
+                    {% if data['error'] %}
+                    <fieldset disabled>
+                    {% endif %}
+                    <div class="form-group">
+                        {{ form.vlanid.label(for="vlanid") }}
+                        {{ form.vlanid(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.subnet.label(for="subnet") }}
+                        {{ form.subnet(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.site.label(for="site") }}
+                        {{ form.site(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.enhanced.label(for="enhanced") }}
+                        {{ form.enhanced(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.isactive.label(for="isactive") }}
+                        {{ form.isactive(class="form-control") }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Create</button>
+                    {% if data['error'] %}
+                    </fieldset>
+                    {% endif %}
+                </form>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-8">
-		<div class="panel panel-default">
-			<div class="panel-heading">Last Ten VLANs</div>
-				<div class="panel-body">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>VLAN</th>
-								<th>Site</th>
-								<th>Subnet</th>
-								<th>OTV</th>
-							</tr>
-						</thead>
-						<tbody>
-
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
+        {% include "topten_side.html" %}
 	</div>
 </div>
 {% endblock %}

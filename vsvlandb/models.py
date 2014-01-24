@@ -31,7 +31,7 @@ class VLAN(dbo.Model):
 		self.added = datetime.datetime.now()
 
 	def __repr__(self):
-		return '<VLAN {}>'.format(self.vlanid)
+		return '<VLAN {}>'.format(self.vlan)
 
 class Subnet(dbo.Model):
 	id = dbo.Column(dbo.Integer, primary_key=True)

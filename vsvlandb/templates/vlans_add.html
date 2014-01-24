@@ -9,12 +9,10 @@
 			</div>
 			<div class="panel-body">
                 <form role="form" action="/vlans/add" method="post" name="addvlan">
-                    {% if data['error'] %}
-                    <fieldset disabled>
-                    {% endif %}
+                    {{ form.hidden_tag() }}
                     <div class="form-group">
                         {{ form.vlanid.label(for="vlanid") }}
-                        {{ form.vlanid(size=5, class="form-control") }}
+                        {{ form.vlanid(class="form-control") }}
                     </div>
                     <div class="form-group">
                         {{ form.subnet.label(for="subnet") }}
@@ -33,9 +31,6 @@
                         {{ form.isactive(class="form-control") }}
                     </div>
                     <button type="submit" class="btn btn-success">Create</button>
-                    {% if data['error'] %}
-                    </fieldset>
-                    {% endif %}
                 </form>
 			</div>
 		</div>
