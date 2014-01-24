@@ -9,13 +9,13 @@ import re
 # Root/Index
 @app.route('/')
 def index():
-	data = {
-		'vlans': VLAN.query.limit(10).all(),
-		'subnets': Subnet.query.limit(10).all(),
-		'sites': Site.query.limit(10).all()
-	}
+    data = {
+        'vlans': VLAN.query.limit(10).all(),
+        'subnets': Subnet.query.limit(10).all(),
+        'sites': Site.query.limit(10).all()
+    }
 
-	return render_template('index.html', lists=data)
+    return render_template('index.html', lists=data)
 
 # VLANS
 @app.route('/vlans')
@@ -44,7 +44,7 @@ def vlans_add():
         return render_template('vlans_add.html', data=data)
 
     if request.method == 'POST':
-    	print request.form
+        print request.form
 
         data = {
             'error': {}
@@ -63,9 +63,9 @@ def vlans_add():
                 data['error']['badvlanid'] = True
                 flash(u"Bad VLAN ID: {}. Please try again.".format(vlanid), category='danger')
         else:
-        	data['error']['badvlanid'] = True
-        	flash(u"Missing vLAN ID. Please try again.", category='danger')
-        	return redirect('/vlans/add')
+            data['error']['badvlanid'] = True
+            flash(u"Missing vLAN ID. Please try again.", category='danger')
+            return redirect('/vlans/add')
 
         if 'subnet' in request.form:
             selections = request.form.getlist('subnet')
@@ -78,7 +78,7 @@ def vlans_add():
                     data['error']['badsubnetid'] = True
                     flash(u"Bad Subnet ID: {}. Please make your selection again.".format(selection), category='danger')
         else:
-        	subnets = False
+            subnets = False
 
         print "Subnets: {}".format(subnets)
 
@@ -93,7 +93,7 @@ def vlans_add():
                     data['error']['badsiteid'] = True
                     flash(u"Bad Site ID: {}. Please make your selection again.".format(selection), category='danger')   
         else:
-        	sites = False
+            sites = False
 
         print "Sites: {}".format(sites)
 
@@ -114,68 +114,68 @@ def vlans_add():
         print "Enhanced: {}".format(enhanced)
 
         if sites and subnets:
-        	print "sites and subnets"
-	        for site in sites:
-	            for subnet in subnets:
-	            	print "Adding {0} to {1} in {2} that is active:{3}, enhanced:{4}".format(vlanid,subnet,site,isactive,enhanced)
-	                vlan = VLAN(vlanid, subnet=subnet, site=site, isactive=isactive, enhanced=enhanced)
-	                dbo.session.add(vlan)
-	                dbo.session.commit()
-	                flash("Added {0} to {1} in {2}".format(vlanid, subnet.subnet, site.name), category='success')
+            print "sites and subnets"
+            for site in sites:
+                for subnet in subnets:
+                    print "Adding {0} to {1} in {2} that is active:{3}, enhanced:{4}".format(vlanid,subnet,site,isactive,enhanced)
+                    vlan = VLAN(vlanid, subnet=subnet, site=site, isactive=isactive, enhanced=enhanced)
+                    dbo.session.add(vlan)
+                    dbo.session.commit()
+                    flash("Added {0} to {1} in {2}".format(vlanid, subnet.subnet, site.name), category='success')
 
-		if sites and not subnets:
-			print "sites not subnets"
-			for site in sites:
-				print "Adding {0} in {1} that is active:{2}, enhanced:{3}".format(vlanid,site,isactive,enhanced)
-				vlan = VLAN(vlanid, subnet=None, site=site, isactive=isactive, enhanced=enhanced)
-				dbo.session.add(vlan)
-				dbo.session.commit()
-				flash("Added {0} in {1}".format(vlanid, site.name), category='success')
+        if sites and not subnets:
+            print "sites not subnets"
+            for site in sites:
+                print "Adding {0} in {1} that is active:{2}, enhanced:{3}".format(vlanid,site,isactive,enhanced)
+                vlan = VLAN(vlanid, subnet=None, site=site, isactive=isactive, enhanced=enhanced)
+                dbo.session.add(vlan)
+                dbo.session.commit()
+                flash("Added {0} in {1}".format(vlanid, site.name), category='success')
         
         if subnets and not sites:
-			print "subnets not sites"
-			for subnet in subnets:
-				print "Adding {0} to {1} that is active:{2}, enhanced:{3}".format(vlanid,subnet,isactive,enhanced)
-				vlan = VLAN(vlanid, subnet=subnet, site=None, isactive=isactive, enhanced=enhanced)
-				dbo.session.add(vlan)
-				dbo.session.commit()
-				flash("Added {0} to {1}".format(vlanid, subnet.subnet), category='success')
+            print "subnets not sites"
+            for subnet in subnets:
+                print "Adding {0} to {1} that is active:{2}, enhanced:{3}".format(vlanid,subnet,isactive,enhanced)
+                vlan = VLAN(vlanid, subnet=subnet, site=None, isactive=isactive, enhanced=enhanced)
+                dbo.session.add(vlan)
+                dbo.session.commit()
+                flash("Added {0} to {1}".format(vlanid, subnet.subnet), category='success')
         
         if not sites and not subnets:
-        	print "not sites not subnets"
-        	print "Adding {0} that is active:{1}, enhanced:{2}".format(vlanid,isactive,enhanced)
-        	vlan = VLAN(vlanid, subnet=None, site=None, isactive=isactive, enhanced=enhanced)
-        	dbo.session.add(vlan)
-        	dbo.session.commit()
-        	flash("Added {}".format(vlanid), category='success')
+            print "not sites not subnets"
+            print "Adding {0} that is active:{1}, enhanced:{2}".format(vlanid,isactive,enhanced)
+            vlan = VLAN(vlanid, subnet=None, site=None, isactive=isactive, enhanced=enhanced)
+            dbo.session.add(vlan)
+            dbo.session.commit()
+            flash("Added {}".format(vlanid), category='success')
 
 
     return redirect('/vlans')
 
 @app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_edit(vlanid):
-	if request.method == 'GET':
-		vlan = VLAN.query.filter_by(id=int(vlanid)).first()
-		return render_template('vlans_edit.html', vlan=vlan)
-	
-	if request.method== 'POST':
-		vlan = VLAN(int(request.form['vlanid']))
-		dbo.session.add(vlan)
-		dbo.session.commit()
+    if request.method == 'GET':
+        vlan = VLAN.query.filter_by(id=int(vlanid)).first()
+        return render_template('vlans_edit.html', vlan=vlan)
+    
+    if request.method== 'POST':
+        vlan = VLAN(int(request.form['vlanid']))
+        dbo.session.add(vlan)
+        dbo.session.commit()
 
-	return redirect('/vlans')
+    return redirect('/vlans')
 
 @app.route('/vlans/delete/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_delete(vlanid):
-	if request.method == 'GET':
-		vlan = VLAN.query.filter_by(id=vlanid).first()
-		return render_template('vlans_delete.html', vlan=vlan)
-	else:
-		vlan = VLAN(int(request.form['vlanid']))
-		dbo.session.add(vlan)
-		dbo.session.commit()
+    if request.method == 'GET':
+        vlan = VLAN.query.filter_by(id=vlanid).first()
+        return render_template('vlans_delete.html', vlan=vlan)
+    else:
+        vlan = VLAN(int(request.form['vlanid']))
+        dbo.session.add(vlan)
+        dbo.session.commit()
 
-		return redirect('/vlans')
+        return redirect('/vlans')
 
 
 # Subnets
@@ -189,22 +189,22 @@ def subnets():
 
 @app.route('/subnets/add', methods=['GET', 'POST'])
 def subnets_add():
-	if request.method == 'GET':
-		return render_template('subnets_add.html')
-	else:
-		subnet = Subnet(request.form['subnet'])
-		dbo.session.add(subnet)
-		dbo.session.commit()
+    if request.method == 'GET':
+        return render_template('subnets_add.html')
+    else:
+        subnet = Subnet(request.form['subnet'])
+        dbo.session.add(subnet)
+        dbo.session.commit()
 
-		return redirect('/subnets')
+        return redirect('/subnets')
 
 @app.route('/subnets/edit/<int:subnetid>')
 def subnets_edit(subnetid):
-	return render_template('subnets_edit.html')
+    return render_template('subnets_edit.html')
 
 @app.route('/subnets/delete/<int:subnetid>')
 def subnets_delete(subnetid):
-	return render_template('subnets_delete.html')
+    return render_template('subnets_delete.html')
 
 
 
@@ -219,19 +219,19 @@ def sites():
 
 @app.route('/sites/add', methods=['GET', 'POST'])
 def sites_add():
-	if request.method == 'GET':
-		return render_template('sites_add.html')
-	else:
-		site = Site(request.form['site'])
-		dbo.session.add(site)
-		dbo.session.commit()
+    if request.method == 'GET':
+        return render_template('sites_add.html')
+    else:
+        site = Site(request.form['site'])
+        dbo.session.add(site)
+        dbo.session.commit()
 
-		return redirect('/sites')
+        return redirect('/sites')
 
 @app.route('/sites/edit/<int:siteid>')
 def sites_edit(siteid):
-	return render_template('sites_edit.html')
+    return render_template('sites_edit.html')
 
 @app.route('/sites/delete/<int:siteid>')
 def sites_delete(siteid):
-	return render_template('sites_delete.html')
+    return render_template('sites_delete.html')
