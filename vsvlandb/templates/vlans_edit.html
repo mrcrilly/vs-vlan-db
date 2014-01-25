@@ -8,7 +8,7 @@
 					Edit VLAN
 			</div>
 			<div class="panel-body">
-                <form role="form" action="/vlans/edit/{{data['target'].id}}" method="post" name="addvlan">
+                <form role="form" action="/vlans/edit/{{data['target'].id}}" method="post" name="editvlan">
                     {{ form.hidden_tag() }}
                     <div class="form-group">
                         {{ form.vlanid.label(for="vlanid") }}
@@ -31,7 +31,7 @@
                         {{ form.isactive.label(for="isactive") }}
                         {{ form.isactive }}
                     </div>
-                    <button type="submit" class="btn btn-success">Create</button>
+                    <button type="submit" class="btn btn-success">Edit</button>
                     <a href="/vlans/delete/{{data['target'].id}}" class="btn btn-danger" role="button">Delete</a>
                 </form>
 			</div>

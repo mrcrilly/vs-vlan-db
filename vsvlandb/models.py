@@ -54,13 +54,13 @@ class Subnet(dbo.Model):
 
 	sites = dbo.relationship('Subnet', secondary=subnet_sites, backref=dbo.backref('subnets', lazy='dynamic'))
 
-	def __init__(self, subnet, netmask, cidr=None, site=None, isactive=True):
+	def __init__(self, subnet, netmask, cidr=None, sites=None, isactive=True):
 		self.subnet = subnet
 		self.netmask = netmask
 		self.cidr = cidr
 		self.isactive = isactive
 
-		self.site = site
+		self.sites = sites
 
 	def __repr__(self):
 		return '<Subnet {0}/{1}>'.format(self.subnet, self.netmask)

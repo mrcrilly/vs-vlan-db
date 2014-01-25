@@ -8,33 +8,22 @@
 					Add New Subnet
 			</div>
 			<div class="panel-body">
-				<form role="form" action="/subnets/add" method="post" name="subnetadd">
-					{% if data['error']['noparents'] %}
-                    <fieldset disabled>
-                    {% endif %}
-					<div class="form-group">
-						<label for="subnet">Subnet</label>
-						<input class="form-control" id="subnet" placeholder="Subnet" name="subnet">
-					</div>
-					<div class="form-group">
-						<label for="site">Site</label>
-						<select multiple class="form-control" id="site" name="site">
-						{% for site in data['sites'] %}
-	                        <option value="{{site.id}}">{{site.name}}</option>
-                        {% endfor %}
-						</select>
-					</div>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" id="isactive" name="active"> Active?
-						</label>
-					</div>
-					<br />
-					<button type="submit" class="btn btn-success">Create</button>
-					{% if data['error']['noparents'] %}
-                    </fieldset>
-                    {% endif %}
-				</form>
+				<form role="form" action="/subnets/add" method="post" name="addsubnet">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.subnet.label(for="subnet") }}
+                        {{ form.subnet(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.site.label(for="site") }}
+                        {{ form.site(class="form-control") }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isactive.label }}
+                        {{ form.isactive }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Create</button>
+                </form>
 			</div>
 		</div>
 	</div>
