@@ -14,19 +14,19 @@ import inspect
 @app.route('/')
 def index():
     data = {
-        'vlans': VLAN.query.limit(10).all(),
-        'subnets': Subnet.query.limit(10).all(),
-        'sites': Site.query.limit(10).all()
+        'vlans': VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id)).limit(10),
+        'subnets': Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id)).limit(10),
+        'sites': Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id)).limit(10)
     }
 
-    return render_template('index.html', lists=data)
+    return render_template('index.html', data=data)
 
 # VLANS
 @app.route('/vlans')
 def vlans_list():
     data = {
-        'active': (VLAN.query.filter_by(isactive=True).count(), VLAN.query.filter_by(isactive=True)),
-        'inactive': (VLAN.query.filter_by(isactive=False).count(), VLAN.query.filter_by(isactive=False))
+        'active': VLAN.query.filter_by(isactive=True),
+        'inactive': VLAN.query.filter_by(isactive=False)
     }
 
     return render_template('vlans_list.html', vlans=data)
@@ -36,8 +36,8 @@ def vlans_add():
     form = VlanForm()
 
     data = {}
-    data['subnets'] = Subnet.query.filter_by(isactive=True)
-    data['sites'] = Site.query.filter_by(isactive=True)
+    data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
+    data['sites'] = Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id))
 
     form.subnet.choices = [(i.id,i.subnet) for i in data['subnets'].all()]
     form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
@@ -51,7 +51,7 @@ def vlans_add():
                 flash(u'{0}: {1}'.format(error, e), category='danger')
 
 
-    data['vlans'] = VLAN.query.filter_by(isactive=True)
+    data['vlans'] = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id))
 
     return render_template('vlans_add.html', data=data, form=form)
 
@@ -60,8 +60,8 @@ def vlans_edit(vlanid):
     form = VlanForm()
 
     data = {}
-    data['subnets'] = Subnet.query.filter_by(isactive=True)
-    data['sites'] = Site.query.filter_by(isactive=True)
+    data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
+    data['sites'] = Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id))
 
     form.subnet.choices = [(i.id,i.subnet) for i in data['subnets'].all()]
     form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
@@ -75,17 +75,24 @@ def vlans_edit(vlanid):
                 flash(u'{0}: {1}'.format(error, e), category='danger')
 
     # We need ALL VLANs here so we can edit non-active VLANs
-    data['vlans'] = VLAN.query.filter_by()
+    data['vlans'] = VLAN.query.filter_by().order_by(dbo.desc(VLAN.id))
 
     data['target'] = data['vlans'].filter_by(id=vlanid).limit(1).first()
 
     # We only want active VLANs in the topten side bar, so we now
     # refine the list to active VLANs
-    data['vlans'].filter_by(isactive=True)
+    data['vlans'] = data['vlans'].filter_by(isactive=True)
 
     form.vlanid.data = data['target'].vlan
+    
     form.subnet.data = [(s.id,s.subnet) for s in data['target'].subnets]
+    form.subnet.default = [s.id for s in data['target'].subnets]
+
+    print form.subnet.default
+
     form.site.data = [(s.id,s.name) for s in data['target'].sites]
+    form.site.default = [s.id for s in data['target'].sites]
+
     form.isactive.data = data['target'].isactive
     form.enhanced.data = data['target'].enhanced
     
@@ -94,6 +101,7 @@ def vlans_edit(vlanid):
 @app.route('/vlans/delete/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_delete(vlanid):
     vlans.delete_id(vlanid)
+    return redirect('/vlans')
 
 # Subnets
 @app.route('/subnets')
@@ -111,9 +119,9 @@ def subnets_add():
             'error': {}
         }
 
-        data['subnets'] = Subnet.query.filter_by(isactive=True)
-        data['sites'] = Site.query.filter_by(isactive=True)
-        data['vlans'] = VLAN.query .filter_by(isactive=True)
+        data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
+        data['sites'] = Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id))
+        data['vlans'] = VLAN.query .filter_by(isactive=True).order_by(dbo.desc(VLAN.id))
 
         return render_template('subnets_add.html', data=data)
     else:

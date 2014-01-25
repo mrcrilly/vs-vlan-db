@@ -5,19 +5,19 @@
 	<div class="col-lg-4">
 		<div class="dashboard-element">
 			<h2 class="text-center">VLANS</h2>
-			<p class="text-center text-success"><a href="/vlans">{{lists['vlans']|count}}</a></p>
+			<p class="text-center text-success"><a href="/vlans">{{data['vlans'].all()|count}}</a></p>
 		</div>
 	</div>
 	<div class="col-lg-4">
 		<div class="dashboard-element">
 			<h2 class="text-center">Subnets</h2>
-			<p class="text-center text-success"><a href="/subnets">{{lists['subnets']|count}}</a></p>
+			<p class="text-center text-success"><a href="/subnets">{{data['subnets'].all()|count}}</a></p>
 		</div>
 	</div>
 	<div class="col-lg-4">
 		<div class="dashboard-element">
 			<h2 class="text-center">Sites</h2>
-			<p class="text-center text-success"><a href="/sites">{{lists['sites']|count}}</a></p>
+			<p class="text-center text-success"><a href="/sites">{{data['sites'].all()|count}}</a></p>
 		</div>
 	</div>
 </div>
@@ -31,7 +31,7 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#vlans" data-toggle="collapse" data-parent="#accordion">
-								{% if lists['vlans'] %}
+								{% if data['vlans'] %}
                                     10 Latest VLANs
                                 {% else %}
                                     No VLAN Data
@@ -52,12 +52,12 @@
 								</tr>
 							</thead>
 							<tbody>
-                            {% if lists['vlans'] %}
-    							{% for vlan in lists['vlans'] %}
+                            {% if data['vlans'] %}
+    							{% for vlan in data['vlans'].all() %}
     								<tr>
     									<td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlan}}</a></td>
-    									<td><a href="/subnets/edit/{{vlan.subnet.id}}">{{vlan.subnet.subnet}}</a></td>
-    									<td><a href="/sites/edit/{{vlan.site.id}}">{{vlan.site.name}}</a></td>
+    									<td>{{vlan.subnets|count}}</td>
+    									<td>{{vlan.sites|count}}</td>
     									<td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
                                         <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.isactive}}</a></td>
     								</tr>
@@ -81,7 +81,7 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#subnets" data-toggle="collapse" data-parent="#accordion">
-                                {% if lists['subnets'] %}
+                                {% if data['subnets'] %}
                                     10 Latest Subnets
                                 {% else %}
                                     No Subnet Data
@@ -97,20 +97,20 @@
 									<th>Subnet</th>
 									<th>Netmask</th>
 									<th>Cidr</th>
-									<th>Site</th>
-									<th>VLAN Count</th>
+									<th>Sites</th>
+									<th>VLANs</th>
 									<th>Active</th>
 								</tr>
 							</thead>
 							<tbody>
-                            {% if lists['subnets'] %}
-    							{% for subnet in lists['subnets'] %}
+                            {% if data['subnets'] %}
+    							{% for subnet in data['subnets'].all() %}
     								<tr>
     									<td><a href="/subnets/edit/{{subnet.id}}">{{subnet.subnet}}</a></td>
     									<td><a href="/subnets/edit/{{subnet.id}}">{{subnet.netmask}}</a></td>
     									<td><a href="/subnets/edit/{{subnet.id}}">{{subnet.cidr}}</a></td>
-    									<td><a href="/subnets/edit/{{subnet.id}}">{{subnet.site.name}}</a></td>
-                                        <td><a href="/subnets/edit/{{subnet.id}}">N/A</a></td>
+    									<td>{{subnet.sites|count}}</td>
+                                        <td>{{subnet.vlans.all()|count}}</td>
                                         <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.isactive}}</a></td>
     								</tr>
     							{% endfor %}
@@ -134,7 +134,7 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#sites" data-toggle="collapse" data-parent="#accordion">
-                            {% if lists['sites'] %}
+                            {% if data['sites'] %}
                                     10 Latest Sites
                                 {% else %}
                                     No Site Data
@@ -155,13 +155,13 @@
 								</tr>
 							</thead>
 							<tbody>
-                            {% if lists['sites'] %}
-    							{% for site in lists['sites'] %}
+                            {% if data['sites'] %}
+    							{% for site in data['sites'].all() %}
     								<tr>
     									<td><a href="/sites/edit/{{site.id}}">{{site.name}}</a></td>
                                         <td><a href="/sites/edit/{{site.id}}">{{site.description}}</a></td>
-                                        <td><a href="/vlans">{{site.vlan|count}}</a></td>
-    									<td><a href="/subnets">{{site.subnet|count}}</a></td>
+                                        <td><a href="/vlans">{{site.vlans|count}}</a></td>
+    									<td><a href="/subnets">{{site.subnets|count}}</a></td>
     									<td><a href="/sites/edit/{{site.id}}">{{site.isactive}}</a></td>
     								</tr>
     							{% endfor %}

@@ -9,7 +9,7 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#activetable" data-toggle="collapse" data-parent="#accordion">
-								{% if vlans['active'][0] >= 1 %}
+								{% if vlans['active'].all()|count >= 1 %}
                     Active VLANs
                 {% else %}
                     No Active VLANs
@@ -30,8 +30,8 @@
               </tr>
 							</thead>
 							<tbody>
-							{% if vlans['active'][0] >= 1 %}
-                  {% for vlan in vlans['active'][1] %}
+							{% if vlans['active'].all()|count >= 1 %}
+                  {% for vlan in vlans['active'].all() %}
                       <tr>
                           <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlan}}</a></td>
                           <td>{{vlan.subnets|count}}</td>
@@ -59,11 +59,11 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#inactivetable" data-toggle="collapse" data-parent="#accordion">
-                                {% if vlans['inactive'][0] >= 1 %}
-                                    Inactive VLANs
-                                {% else %}
-                                    No Inactive VLANs
-                                {% endif %}
+              {% if vlans['inactive'].all()|count >= 1 %}
+                  Inactive VLANs
+              {% else %}
+                  No Inactive VLANs
+              {% endif %}
 							</a>
 						</h4>
 				</div>
@@ -80,12 +80,12 @@
                 </tr>
               </thead>
               <tbody>
-                {% if vlans['inactive'][0] >= 1 %}
-                  {% for vlan in vlans['inactive'][1] %}
+                {% if vlans['inactive'].all()|count >= 1 %}
+                  {% for vlan in vlans['inactive'].all() %}
                   <tr>
                     <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlan}}</a></td>
-                    <td><a href="/subnets/edit/{{vlan.subnet.id}}">{{vlan.subnet.subnet}}</a></td>
-                    <td><a href="/sites/edit/{{vlan.site.id}}">{{vlan.site.name}}</a></td>
+                    <td>{{vlan.subnets|count}}</td>
+                    <td>{{vlan.sites|count}}</td>
                     <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
                     <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.isactive}}</a></td>
                   </tr>

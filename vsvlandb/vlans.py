@@ -9,9 +9,10 @@ def delete_id(vlan_id, flash_msg=True):
 
 	if vlan:
 		dbo.session.delete(vlan)
+		dbo.session.commit()
 
 		if flash_msg:
-			flash("Deleted VLAN {}".format(vlan), category='success')
+			flash("Deleted VLAN {}".format(vlan.vlan), category='success')
 
 def delete_vlan(vlan, flash_msg=True):
 	vlans = VLAN.query.filter_by(vlan=vlan).all()
@@ -19,6 +20,7 @@ def delete_vlan(vlan, flash_msg=True):
 	if vlans:
 		for vlan in vlans:
 			dbo.session.delete(vlan)
+			dbo.session.commit()
 
 		if flash_msg:
 			flash("Deleted VLAN {}".format(vlan), category='success')
