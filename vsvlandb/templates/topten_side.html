@@ -21,7 +21,7 @@
                 {% for vlan in data['vlans'][:5] %}
                     <tr>
                         <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlan}}</a></td>
-                        <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.subnet.subnet}}</a></td>
+                        <td>{{vlan.subnets|count}}</td>
                         <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
                     </tr>
                 {% endfor %}

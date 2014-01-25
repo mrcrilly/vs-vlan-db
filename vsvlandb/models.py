@@ -4,7 +4,20 @@ from vsvlandb import dbo
 import ipaddress
 import datetime
 
+vlan_subnets = dbo.Table('vlan_subnets',
+						 dbo.Column('subnet_id', dbo.Integer, dbo.ForeignKey('subnet.id')),
+						 dbo.Column('vlan_id', dbo.Integer, dbo.ForeignKey('VLAN.id')))
+
+vlan_sites = dbo.Table('vlan_sites',
+						 dbo.Column('site_id', dbo.Integer, dbo.ForeignKey('site.id')),
+						 dbo.Column('vlan_id', dbo.Integer, dbo.ForeignKey('VLAN.id')))
+
+subnet_sites = dbo.Table('subnet_sites',
+						 dbo.Column('subnet_id', dbo.Integer, dbo.ForeignKey('subnet.id')),
+						 dbo.Column('site_id', dbo.Integer, dbo.ForeignKey('site.id')))
+
 class VLAN(dbo.Model):
+
 	id = dbo.Column(dbo.Integer, primary_key=True)
 
 	vlan = dbo.Column(dbo.String(5))
@@ -12,26 +25,23 @@ class VLAN(dbo.Model):
 	impact = dbo.Column(dbo.String(5))
 	isactive = dbo.Column(dbo.Boolean)
 
-	subnet_id = dbo.Column(dbo.Integer, dbo.ForeignKey('subnet.id'))
-	subnet = dbo.relationship('Subnet', backref='vlan', lazy='joined')
-
-	site_id = dbo.Column(dbo.Integer, dbo.ForeignKey('site.id'))
-	site = dbo.relationship('Site', backref='vlan', lazy='joined')
+	subnets = dbo.relationship('Subnet', secondary=vlan_subnets, backref=dbo.backref('vlans', lazy='dynamic'))
+	sites = dbo.relationship('Site', secondary=vlan_sites, backref=dbo.backref('vlans', lazy='dynamic'))
 
 	added = dbo.Column(dbo.DateTime)
 
-	def __init__(self, vlanid, subnet=None, site=None, enhanced=False, impact=None, isactive=True):
+	def __init__(self, vlanid, subnets=[], sites=[], enhanced=False, impact=None, isactive=True):
 		self.vlan = vlanid
 		self.enhanced = enhanced
 		self.isactive = isactive
 
-		self.subnet = subnet
-		self.site = site
+		self.subnets = subnets
+		self.sites = sites
 
 		self.added = datetime.datetime.now()
 
 	def __repr__(self):
-		return '<VLAN {}>'.format(self.vlan)
+		return '<VLAN {0}, {1}, {2}>'.format(self.vlan, self.subnet_id, self.site_id)
 
 class Subnet(dbo.Model):
 	id = dbo.Column(dbo.Integer, primary_key=True)
@@ -42,8 +52,7 @@ class Subnet(dbo.Model):
 	size = dbo.Column(dbo.Integer)
 	isactive = dbo.Column(dbo.Boolean)
 
-	site_id = dbo.Column(dbo.Integer, dbo.ForeignKey('site.id'))
-	site = dbo.relationship('Site', backref='subnet', lazy='joined')
+	sites = dbo.relationship('Subnet', secondary=subnet_sites, backref=dbo.backref('subnets', lazy='dynamic'))
 
 	def __init__(self, subnet, netmask, cidr=None, site=None, isactive=True):
 		self.subnet = subnet
@@ -59,7 +68,7 @@ class Subnet(dbo.Model):
 class Site(dbo.Model):
 	id = dbo.Column(dbo.Integer, primary_key=True)
 	name = dbo.Column(dbo.String, unique=True)
-	description = dbo.Column(dbo.String)
+	description = dbo.Column(dbo.String(30))
 	isactive = dbo.Column(dbo.Boolean)
 
 	def __init__(self, sitename, description=None, isactive=True):
@@ -70,3 +79,16 @@ class Site(dbo.Model):
 	def __repr__(self):
 		return '<Site {0} ({1})>'.format(self.name, self.isactive)
         
+class Impact(dbo.Model):
+	id = dbo.Column(dbo.Integer, primary_key=True)
+	name = dbo.Column(dbo.String, unique=True)
+	description = dbo.Column(dbo.String(30))
+	isactive = dbo.Column(dbo.Boolean)
+
+	def __init__(self, impact, description=None, isactive=True):
+		self.impact = impact
+		self.isactive = isactive
+		self.description = description
+
+	def __repr__(self):
+		return '<Impact {0} ({1})>'.format(self.impact, self.isactive)

@@ -8,7 +8,7 @@
 					Edit VLAN
 			</div>
 			<div class="panel-body">
-                <form role="form" action="/vlans/edit/{{form.vlanid.data}}" method="post" name="addvlan">
+                <form role="form" action="/vlans/edit/{{data['target'].id}}" method="post" name="addvlan">
                     {{ form.hidden_tag() }}
                     <div class="form-group">
                         {{ form.vlanid.label(for="vlanid") }}

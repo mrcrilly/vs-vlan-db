@@ -1,5 +1,5 @@
 
-from vsvlandb import app, dbo, vlan_helpers
+from vsvlandb import app, dbo, vlans
 from vsvlandb.models import VLAN, Subnet, Site
 from vsvlandb.forms.vlan import VlanForm
 
@@ -23,7 +23,7 @@ def index():
 
 # VLANS
 @app.route('/vlans')
-def vlans():
+def vlans_list():
     data = {
         'active': (VLAN.query.filter_by(isactive=True).count(), VLAN.query.filter_by(isactive=True)),
         'inactive': (VLAN.query.filter_by(isactive=False).count(), VLAN.query.filter_by(isactive=False))
@@ -38,13 +38,12 @@ def vlans_add():
     data = {}
     data['subnets'] = Subnet.query.filter_by(isactive=True)
     data['sites'] = Site.query.filter_by(isactive=True)
-    data['vlans'] = VLAN.query.filter_by(isactive=True)
 
     form.subnet.choices = [(i.id,i.subnet) for i in data['subnets'].all()]
     form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
 
     if form.validate_on_submit():
-        vlan_helpers.addVlan(form)
+        vlans.add(form)
         return redirect('/vlans')
     else:
         for error in form.errors:
@@ -52,56 +51,53 @@ def vlans_add():
                 flash(u'{0}: {1}'.format(error, e), category='danger')
 
 
+    data['vlans'] = VLAN.query.filter_by(isactive=True)
+
     return render_template('vlans_add.html', data=data, form=form)
 
 @app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_edit(vlanid):
     form = VlanForm()
 
+    data = {}
+    data['subnets'] = Subnet.query.filter_by(isactive=True)
+    data['sites'] = Site.query.filter_by(isactive=True)
+
     form.subnet.choices = [(i.id,i.subnet) for i in data['subnets'].all()]
     form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
 
     if form.validate_on_submit():
-        vlan = VLAN.query.filter_by(id=form.vlanid.data).limit(1).first()
-
-        vlan.vlan = form.vlanid.data
-        vlan.enhanced = form.enhanced.data
-        vlan.isactive = form.isactive.data
-
-        dbo.session.commit()
+        vlans.edit(form, vlanid)
         return redirect('/vlans')
+    else:
+        for error in form.errors:
+            for e in form.errors[error]:
+                flash(u'{0}: {1}'.format(error, e), category='danger')
 
-    data = {}
-    data['subnets'] = Subnet.query.filter_by(isactive=True)
-    data['sites'] = Site.query.filter_by(isactive=True)
-    data['vlans'] = VLAN.query.filter_by(isactive=True)
+    # We need ALL VLANs here so we can edit non-active VLANs
+    data['vlans'] = VLAN.query.filter_by()
 
-    vlan = VLAN.query.filter_by(id=vlanid).limit(1).first()
+    data['target'] = data['vlans'].filter_by(id=vlanid).limit(1).first()
 
-    form.vlanid.data = vlan.id
-    form.subnet.data = [i.id for i in Subnet.query.filter_by(id=vlan.subnet_id)]
-    form.site.data = [i.id for i in Site.query.filter_by(id=vlan.site_id)]
-    form.isactive.data = vlan.isactive
-    form.enhanced.data = vlan.enhanced
+    # We only want active VLANs in the topten side bar, so we now
+    # refine the list to active VLANs
+    data['vlans'].filter_by(isactive=True)
+
+    form.vlanid.data = data['target'].vlan
+    form.subnet.data = [(s.id,s.subnet) for s in data['target'].subnets]
+    form.site.data = [(s.id,s.name) for s in data['target'].sites]
+    form.isactive.data = data['target'].isactive
+    form.enhanced.data = data['target'].enhanced
     
     return render_template('vlans_edit.html', data=data, form=form)
 
 @app.route('/vlans/delete/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_delete(vlanid):
-    if request.method == 'GET':
-        vlan = VLAN.query.filter_by(id=vlanid).first()
-        return render_template('vlans_delete.html', vlan=vlan)
-    else:
-        vlan = VLAN(int(request.form['vlanid']))
-        dbo.session.add(vlan)
-        dbo.session.commit()
-
-        return redirect('/vlans')
-
+    vlans.delete_id(vlanid)
 
 # Subnets
 @app.route('/subnets')
-def subnets():
+def subnets_list():
     lists = {
         'active': (Subnet.query.filter_by(isactive=True).count(), Subnet.query.filter_by(isactive=True)),
         'inactive': (Subnet.query.filter_by(isactive=False).count(), Subnet.query.filter_by(isactive=False)),
@@ -197,7 +193,7 @@ def subnets_delete(subnetid):
 
 #Sites
 @app.route('/sites')
-def sites():
+def sites_list():
     lists = {
         'active': (Site.query.filter_by(isactive=True).count(), Site.query.filter_by(isactive=True)),
         'inactive': (Site.query.filter_by(isactive=False).count(), Site.query.filter_by(isactive=False)),
@@ -222,3 +218,17 @@ def sites_edit(siteid):
 @app.route('/sites/delete/<int:siteid>')
 def sites_delete(siteid):
     return render_template('sites_delete.html')
+
+# Impact
+@app.route('/impacts')
+def impact_list():
+    pass
+
+def impact_add():
+    pass
+
+def impact_edit():
+    pass
+
+def impact_delete():
+    pass

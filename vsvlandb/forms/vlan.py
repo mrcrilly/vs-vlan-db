@@ -9,7 +9,7 @@ class VlanForm(Form):
 
 	# Optionals
 	subnet = SelectMultipleField(u'Subnets', coerce=int, validators=[NumberRange(min=1)])
-	site = SelectMultipleField(u'Site', coerce=int, validators=[NumberRange(min=1)])
+	site = SelectMultipleField(u'Site', coerce=int)
 
 	isactive = BooleanField(u'Active')
 	enhanced = BooleanField(u'Enhanced')
