@@ -20,7 +20,7 @@ If you want to brave using this application, then simply take the following step
 1. Install the requirements/dependecies
  1. pip install flask flask-wtf flask-restful flask-sqlalchemy sqlalchemy ipaddress
 
-You have a few choices at this point. You can either just './run.py', and get a locally running version (the database will be in /tmp/vlan.db), or you can install and configure NginX and uwsgi. Please see [[http://flask.pocoo.org/docs/deploying/uwsgi/|the Flask docs]] for how-to do this.
+You have a few choices at this point. You can either just './run.py', and get a locally running version (the database will be in /tmp/vlan.db), or you can install and configure NginX and uwsgi. Please see http://flask.pocoo.org/docs/deploying/uwsgi/ for how-to on the NginX setup.
 
 ## Features
 
