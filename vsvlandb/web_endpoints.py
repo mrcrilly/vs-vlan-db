@@ -11,6 +11,8 @@ import ipaddress
 import sys
 import inspect
 
+from datetime import datetime
+
 # Root/Index
 @app.route('/')
 def index():
@@ -55,6 +57,11 @@ def vlans_add():
     data['vlans'] = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id))
 
     return render_template('vlans_add.html', data=data, form=form)
+
+@app.route('/vlans/view/<int:vlanid>')
+def vlans_view(vlanid):
+    vlan = VLAN.query.filter_by(id=vlanid).first()
+    return render_template('vlans_view.html', vlan=vlan)
 
 @app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_edit(vlanid):
@@ -111,6 +118,11 @@ def subnets_list():
     }
 
     return render_template('subnets_list.html', subnets=lists)
+
+@app.route('/subnets/view/<int:subnetid>')
+def subnets_view(subnetid):
+    subnet = Subnet.query.filter_by(id=subnetid).first()
+    return render_template('subnets_view.html', subnet=subnet)
 
 @app.route('/subnets/add', methods=['GET', 'POST'])
 def subnets_add():
@@ -213,6 +225,11 @@ def sites_list():
     }
 
     return render_template('sites_list.html', sites=lists)
+
+@app.route('/sites/view/<int:siteid>')
+def sites_view(siteid):
+    site = Site.query.filter_by(id=siteid).first()
+    return render_template('sites_view.html', site=site)
 
 @app.route('/sites/add', methods=['GET', 'POST'])
 def sites_add():

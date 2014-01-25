@@ -7,15 +7,15 @@
 		<div class="panel-group" id="accordion">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-						<h4 class="panel-title">
-							<a href="#activetable" data-toggle="collapse" data-parent="#accordion">
-								{% if vlans['active'].all()|count >= 1 %}
-                    Active VLANs
-                {% else %}
-                    No Active VLANs
-                {% endif %}
-							</a>
-						</h4>
+					<h4 class="panel-title">
+						<a href="#activetable" data-toggle="collapse" data-parent="#accordion">
+							{% if vlans['active'].all()|count >= 1 %}
+                            Active VLANs
+                        {% else %}
+                            No Active VLANs
+                        {% endif %}
+						</a>
+					</h4>
 				</div>
 				<div class="panel-collapse collapse in" id="activetable">
 					<div class="panel-body">
@@ -33,7 +33,7 @@
 							{% if vlans['active'].all()|count >= 1 %}
                   {% for vlan in vlans['active'].all() %}
                       <tr>
-                          <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlan}}</a></td>
+                          <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
                           <td>{{vlan.subnets|count}}</td>
                           <td>{{vlan.sites|count}}</td>
                           <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
@@ -83,7 +83,7 @@
                 {% if vlans['inactive'].all()|count >= 1 %}
                   {% for vlan in vlans['inactive'].all() %}
                   <tr>
-                    <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlan}}</a></td>
+                    <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
                     <td>{{vlan.subnets|count}}</td>
                     <td>{{vlan.sites|count}}</td>
                     <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
