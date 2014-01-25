@@ -9,8 +9,8 @@ vlan_subnets = dbo.Table('vlan_subnets',
 						 dbo.Column('vlan_id', dbo.Integer, dbo.ForeignKey('VLAN.id')))
 
 vlan_sites = dbo.Table('vlan_sites',
-						 dbo.Column('site_id', dbo.Integer, dbo.ForeignKey('site.id')),
-						 dbo.Column('vlan_id', dbo.Integer, dbo.ForeignKey('VLAN.id')))
+						dbo.Column('site_id', dbo.Integer, dbo.ForeignKey('site.id')),
+						dbo.Column('vlan_id', dbo.Integer, dbo.ForeignKey('VLAN.id')))
 
 subnet_sites = dbo.Table('subnet_sites',
 						 dbo.Column('subnet_id', dbo.Integer, dbo.ForeignKey('subnet.id')),
@@ -71,8 +71,8 @@ class Site(dbo.Model):
 	description = dbo.Column(dbo.String(30))
 	isactive = dbo.Column(dbo.Boolean)
 
-	def __init__(self, sitename, description=None, isactive=True):
-		self.name = sitename
+	def __init__(self, name, description=None, isactive=True):
+		self.name = name
 		self.isactive = isactive
 		self.description = description
 

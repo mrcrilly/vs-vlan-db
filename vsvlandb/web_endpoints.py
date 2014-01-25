@@ -1,8 +1,8 @@
 
-from vsvlandb import app, dbo, vlans, subnets
+from vsvlandb import app, dbo, vlans, subnets, sites
 from vsvlandb.models import VLAN, Subnet, Site
 
-from vsvlandb.forms import vlan, subnet
+from vsvlandb.forms import vlan, subnet, site
 
 from flask import redirect, request, render_template, url_for, flash
 
@@ -212,18 +212,26 @@ def sites_list():
         'inactive': Site.query.filter_by(isactive=False).order_by(dbo.desc(Site.id)),
     }
 
-    return render_template('sites_list.html', data=lists)
+    return render_template('sites_list.html', sites=lists)
 
 @app.route('/sites/add', methods=['GET', 'POST'])
 def sites_add():
-    if request.method == 'GET':
-        return render_template('sites_add.html')
-    else:
-        site = Site(request.form['site'])
-        dbo.session.add(site)
-        dbo.session.commit()
+    form = site.SiteForm()
 
+    data = {}
+    data['vlans'] = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id))
+    data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
+    data['sites'] = Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id))
+
+    if form.validate_on_submit():
+        sites.add(form)
         return redirect('/sites')
+    else:
+        for error in form.errors:
+            for e in form.errors[error]:
+                flash(u'{0}: {1}'.format(error, e), category='danger')
+
+    return render_template('sites_add.html', data=data, form=form)
 
 @app.route('/sites/edit/<int:siteid>', methods=['GET', 'POST'])
 def sites_edit(siteid):
