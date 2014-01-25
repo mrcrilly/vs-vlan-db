@@ -8,7 +8,7 @@
 					Edit VLAN
 			</div>
 			<div class="panel-body">
-                <form role="form" action="/vlans/edit/{{form.vlanid}}" method="post" name="addvlan">
+                <form role="form" action="/vlans/edit/{{form.vlanid.data}}" method="post" name="addvlan">
                     {{ form.hidden_tag() }}
                     <div class="form-group">
                         {{ form.vlanid.label(for="vlanid") }}
@@ -22,13 +22,14 @@
                         {{ form.site.label(for="site") }}
                         {{ form.site(class="form-control") }}
                     </div>
-                    <div class="form-group">
-                        {{ form.enhanced.label(for="enhanced") }}
-                        {{ form.enhanced(class="form-control") }}
+                    <div class="checkbox">
+                        <label>
+                            {{ form.enhanced }} Enhanced
+                        </label>
                     </div>
-                    <div class="form-group">
+                    <div class="checkbox">
                         {{ form.isactive.label(for="isactive") }}
-                        {{ form.isactive(class="form-control") }}
+                        {{ form.isactive }}
                     </div>
                     <button type="submit" class="btn btn-success">Create</button>
                 </form>

@@ -22,13 +22,13 @@
                         {{ form.site.label(for="site") }}
                         {{ form.site(class="form-control") }}
                     </div>
-                    <div class="form-group">
-                        {{ form.enhanced.label(for="enhanced") }}
-                        {{ form.enhanced(class="form-control") }}
+                    <div class="checkbox">
+                        {{ form.enhanced.label }}
+                        {{ form.enhanced }}
                     </div>
-                    <div class="form-group">
-                        {{ form.isactive.label(for="isactive") }}
-                        {{ form.isactive(class="form-control") }}
+                    <div class="checkbox">
+                        {{ form.isactive.label }}
+                        {{ form.isactive }}
                     </div>
                     <button type="submit" class="btn btn-success">Create</button>
                 </form>

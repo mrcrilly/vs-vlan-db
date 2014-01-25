@@ -58,6 +58,19 @@ def vlans_add():
 def vlans_edit(vlanid):
     form = VlanForm()
 
+    form.subnet.choices = [(i.id,i.subnet) for i in data['subnets'].all()]
+    form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
+
+    if form.validate_on_submit():
+        vlan = VLAN.query.filter_by(id=form.vlanid.data).limit(1).first()
+
+        vlan.vlan = form.vlanid.data
+        vlan.enhanced = form.enhanced.data
+        vlan.isactive = form.isactive.data
+
+        dbo.session.commit()
+        return redirect('/vlans')
+
     data = {}
     data['subnets'] = Subnet.query.filter_by(isactive=True)
     data['sites'] = Site.query.filter_by(isactive=True)
@@ -66,16 +79,11 @@ def vlans_edit(vlanid):
     vlan = VLAN.query.filter_by(id=vlanid).limit(1).first()
 
     form.vlanid.data = vlan.id
-    form.subnet.choices = [(i.id,i.subnet) for i in data['subnets'].all()]
     form.subnet.data = [i.id for i in Subnet.query.filter_by(id=vlan.subnet_id)]
-    form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
     form.site.data = [i.id for i in Site.query.filter_by(id=vlan.site_id)]
     form.isactive.data = vlan.isactive
     form.enhanced.data = vlan.enhanced
     
-    if form.validate_on_submit():
-        pass
-
     return render_template('vlans_edit.html', data=data, form=form)
 
 @app.route('/vlans/delete/<int:vlanid>', methods=['GET', 'POST'])
