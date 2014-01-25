@@ -148,7 +148,6 @@
 							<thead>
 								<tr>
 									<th>Name</th>
-									<th>Description</th>
                                     <th>VLANs</th>
                                     <th>Subnets</th>
 									<th>Active</th>
@@ -159,9 +158,8 @@
     							{% for site in data['sites'].all() %}
     								<tr>
     									<td><a href="/sites/edit/{{site.id}}">{{site.name}}</a></td>
-                                        <td><a href="/sites/edit/{{site.id}}">{{site.description}}</a></td>
-                                        <td><a href="/vlans">{{site.vlans|count}}</a></td>
-    									<td><a href="/subnets">{{site.subnets|count}}</a></td>
+                                        <td><a href="/vlans">{{site.vlans.all()|count}}</a></td>
+    									<td><a href="/subnets">{{site.subnets.all()|count}}</a></td>
     									<td><a href="/sites/edit/{{site.id}}">{{site.isactive}}</a></td>
     								</tr>
     							{% endfor %}

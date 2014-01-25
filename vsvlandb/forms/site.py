@@ -8,4 +8,3 @@ class SiteForm(Form):
 	name = TextField(u'Site', validators=[DataRequired(), Length(min=1, max=30)])
 
 	isactive = BooleanField(u'Active')
-	enhanced = BooleanField(u'Enhanced')

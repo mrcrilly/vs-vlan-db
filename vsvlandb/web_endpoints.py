@@ -173,7 +173,7 @@ def subnets_edit(subnetid):
         if error:
             return redirect('subnets/edit/{}'.format(subnetid))
 
-        subnets.edit(form, vlanid)
+        subnets.edit(form, subnetid)
         return redirect('/subnets')
     else:
         for error in form.errors:
@@ -235,11 +235,38 @@ def sites_add():
 
 @app.route('/sites/edit/<int:siteid>', methods=['GET', 'POST'])
 def sites_edit(siteid):
-    return render_template('sites_edit.html')
+    form = site.SiteForm()
+
+    data = {}
+    data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
+    data['vlans'] = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id))
+
+    if form.validate_on_submit():
+        sites.edit(form, siteid)
+        return redirect('/sites')
+    else:
+        for error in form.errors:
+            for e in form.errors[error]:
+                flash(u'{0}: {1}'.format(error, e), category='danger')
+
+    # We need ALL VLANs here so we can edit non-active VLANs
+    data['sites'] = Site.query.filter_by().order_by(dbo.desc(Site.id))
+
+    data['target'] = data['sites'].filter_by(id=siteid).limit(1).first()
+
+    # We only want active VLANs in the topten side bar, so we now
+    # refine the list to active VLANs
+    data['sites'] = data['sites'].filter_by(isactive=True)
+
+    form.name.data = data['target'].name
+    form.isactive.data = data['target'].isactive
+    
+    return render_template('sites_edit.html', data=data, form=form)
 
 @app.route('/sites/delete/<int:siteid>', methods=['GET', 'POST'])
 def sites_delete(siteid):
-    return render_template('sites_delete.html')
+    sites.delete_id(siteid)
+    return redirect('/sites')
 
 # Coming soon.
 # Impact

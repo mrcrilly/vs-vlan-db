@@ -25,7 +25,6 @@
                   <th>Name</th>
                   <th>Subnets</th>
                   <th>VLANs</th>
-                  <th>Sites</th>
                 </tr>
               </thead>
               <tbody>
@@ -35,12 +34,10 @@
                           <td><a href="/sites/edit/{{site.id}}">{{site.name}}</a></td>
                           <td>{{site.subnets.all()|count}}</td>
                           <td>{{site.vlans.all()|count}}</td>
-                          <td>{{site.isactive}}</td>
                       </tr>
                   {% endfor %}
               {% else %}
                  <tr>
-                     <td>N/D</td>
                      <td>N/D</td>
                      <td>N/D</td>
                      <td>N/D</td>
@@ -72,7 +69,6 @@
                   <th>Name</th>
                   <th>Subnets</th>
                   <th>VLANs</th>
-                  <th>Sites</th>
                 </tr>
               </thead>
               <tbody>
@@ -82,12 +78,10 @@
                           <td><a href="/sites/edit/{{site.id}}">{{site.name}}</a></td>
                           <td>{{site.subnets.all()|count}}</td>
                           <td>{{site.vlans.all()|count}}</td>
-                          <td>{{site.isactive}}</td>
                       </tr>
                   {% endfor %}
               {% else %}
                  <tr>
-                     <td>N/D</td>
                      <td>N/D</td>
                      <td>N/D</td>
                      <td>N/D</td>

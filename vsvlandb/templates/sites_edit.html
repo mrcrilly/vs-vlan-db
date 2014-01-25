@@ -5,50 +5,27 @@
 	<div class="col-lg-4">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-					Edit Site
+					Edit Site {{data['target'].name}}
 			</div>
 			<div class="panel-body">
-				<form role="form">
-					<div class="form-group">
-						<label for="site">Site Name</label>
-						<input class="form-control" id="site" placeholder="Site Name">
-					</div>
-					<div class="form-group">
-						<label for="Description">Description (Optional)</label>
-						<input class="form-control" id="description" placeholder="description">
-					</div>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" id="isactive"> Active?
-						</label>
-					</div>
-					<br />
-					<button type="submit" class="btn btn-success">Update</button>
-					<button type="submit" class="btn btn-danger">Cancel</button>
-				</form>
+				<form role="form" action="/sites/edit/{{data['target'].id}}" method="post" name="editsite">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.name.label(for="vlanid") }}
+                        {{ form.name(class="form-control") }}
+                    </div>
+                     <div class="checkbox">
+                        {{ form.isactive.label(for="isactive") }}
+                        {{ form.isactive }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Edit</button>
+                    <a href="/sites/delete/{{data['target'].id}}" class="btn btn-danger" role="button">Delete</a>
+                </form>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-8">
-		<div class="panel panel-default">
-			<div class="panel-heading">Last Ten Sites</div>
-				<div class="panel-body">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>Name</th>
-								<th>Description</th>
-								<th>Active</th>
-							</tr>
-						</thead>
-						<tbody>
-							
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
+	    {% include "topten_side.html" %}
 	</div>
 </div>
 {% endblock %}
