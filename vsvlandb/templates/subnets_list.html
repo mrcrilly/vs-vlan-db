@@ -80,7 +80,7 @@
 							</thead>
 							<tbody>
                             {% if subnets['inactive'].all()|count >= 1 %}
-                                {% for subnet in subnets['inactive'].all()|count %}
+                                {% for subnet in subnets['inactive'].all() %}
                                     <tr>
                                         <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.subnet}}</a></td>
                                         <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.netmask}}</a></td>
