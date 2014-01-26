@@ -1,66 +1,258 @@
 
-from vsvlandb import app
+from vsvlandb import app, dbo, vlans, subnets, sites, impacts, helpers
+from vsvlandb.models import VLAN, Subnet, Site, Impact
+from vsvlandb.forms import vlan, subnet, site, impact
 
-from flask import request, render_template
+from flask import redirect, request, render_template, url_for, flash
+
+import re
+import ipaddress
+import sys
+import inspect
+
+from datetime import datetime
 
 # Root/Index
 @app.route('/')
 def index():
-	return render_template('index.html')
+    data = {
+        'vlans': VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id)).limit(10),
+        'subnets': Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id)).limit(10),
+        'sites': Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id)).limit(10)
+    }
 
-
+    return render_template('index.html', data=data)
 
 # VLANS
 @app.route('/vlans')
-def vlans():
-	return render_template('vlans_list.html')
+def vlans_list():
+    data = {
+        'active': VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id)),
+        'inactive': VLAN.query.filter_by(isactive=False).order_by(dbo.desc(VLAN.id))
+    }
 
-@app.route('/vlans/add')
+    return render_template('vlans_list.html', vlans=data)
+
+@app.route('/vlans/add', methods=['GET', 'POST'])
 def vlans_add():
-	return render_template('vlans_add.html')
+    data = helpers.top_ten()
+    form = vlan.VlanForm()
 
-@app.route('/vlans/edit/<int:vlanid>')
+    if form.validate_on_submit():
+        target = VLAN(form.vlan.data)
+        form.populate_obj(target)
+        dbo.session.commit()
+
+        return redirect('/vlans/view/{}'.format(target.id))
+    else:
+        helpers.flash_errors(form.errors)
+
+    return render_template('vlans_add.html', data=data, form=form)
+
+@app.route('/vlans/view/<int:vlanid>')
+def vlans_view(vlanid):
+    vlan = VLAN.query.filter_by(id=vlanid).first()
+    return render_template('vlans_view.html', vlan=vlan)
+
+@app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_edit(vlanid):
-	return render_template('vlans_edit.html')
+    data = helpers.top_ten()
 
-@app.route('/vlans/delete/<int:vlanid>')
+    target = VLAN.query.get(vlanid)
+    
+    if not target:
+        flash("Unable to find VLAN {}".format(vlan.vlan), category='warning')
+        return redirect('/vlans')
+
+    form = vlan.VlanForm(obj=target)
+
+    if form.validate_on_submit():
+        form.populate_obj(target)
+        dbo.session.commit()
+
+        flash("Updated VLAN {}".format(target.vlan), category='success')
+        return redirect('/vlans/view/{}'.format(target.id))
+
+    return render_template('vlans_edit.html', data=data, vlan=target, form=form)
+
+@app.route('/vlans/delete/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_delete(vlanid):
-	return render_template('vlans_delete.html')
+    target = VLAN.query.get(vlanid)
+    if target:
+        dbo.session.delete(target)
+        dbo.session.commit()
+        flash("Deleted VLAN {}".format(target.vlan), category='success')
+    else:
+        flash("Unable to find VLAN {}".format(target.vlan), category='warning')
 
-
+    return redirect('/vlans')
 
 # Subnets
 @app.route('/subnets')
-def subnets():
-	return render_template('subnets_list.html')
+def subnets_list():
+    lists = {
+        'active': Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id)),
+        'inactive': Subnet.query.filter_by(isactive=False).order_by(dbo.desc(Subnet.id)),
+    }
 
-@app.route('/subnets/add')
+    return render_template('subnets_list.html', subnets=lists)
+
+@app.route('/subnets/view/<int:subnetid>')
+def subnets_view(subnetid):
+    target = Subnet.query.filter_by(id=subnetid).first()
+    return render_template('subnets_view.html', subnet=target)
+
+@app.route('/subnets/add', methods=['GET', 'POST'])
 def subnets_add():
-	return render_template('subnets_add.html')
+    form = subnet.SubnetForm()
+    data = helpers.top_ten()
 
-@app.route('/subnets/edit/<int:subnetid>')
+    if form.validate_on_submit():
+        try:
+            ip = ipaddress.IPv4Network(form.subnet.data.decode())
+        except ipaddress.AddressValueError as e:
+            flash("Error: {}".format(e.message), category='danger')
+        else:
+            target = Subnet(ip)
+            form.populate_obj(target)
+
+            dbo.session.commit()
+
+            flash("Added subnet {}".format(form.subnet.data), category='success')
+            return redirect('/subnets/add')
+
+        return render_template('subnets_add.html', data=data, form=form)
+
+    return render_template('subnets_add.html', data=data, form=form)
+
+@app.route('/subnets/edit/<int:subnetid>', methods=['GET', 'POST'])
 def subnets_edit(subnetid):
-	return render_template('subnets_edit.html')
+    target = Subnet.query.get(subnetid)
+    form = subnet.SubnetForm(obj=target)
+
+    if form.validate_on_submit():
+        form.populate_obj(target)
+        dbo.session.commit()
+        flash("Edited subnet {}".format(form.subnet.data), category='success')
+
+        return redirect('/subnets')
+
+    return render_template('subnets_edit.html', data=helpers.top_ten(), subnet=target, form=form)
 
 @app.route('/subnets/delete/<int:subnetid>')
 def subnets_delete(subnetid):
-	return render_template('subnets_delete.html')
+    target = Subnet.query.get(subnetid)
 
+    if target:
+        dbo.session.delete(target)
+        dbo.session.commit()
+        flash("Deleted subnet {}".format(target.subnet), category='success')
+    else:
+        flash("Unable to find subnet {}".format(subnet.subnet), category='warning')
+
+    return redirect('/subnets')
 
 
 #Sites
 @app.route('/sites')
-def sites():
-	return render_template('sites_list.html')
+def sites_list():
+    lists = {
+        'active': Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id)),
+        'inactive': Site.query.filter_by(isactive=False).order_by(dbo.desc(Site.id)),
+    }
 
-@app.route('/sites/add')
+    return render_template('sites_list.html', sites=lists)
+
+@app.route('/sites/view/<int:siteid>')
+def sites_view(siteid):
+    target = Site.query.filter_by(id=siteid).first()
+    return render_template('sites_view.html', site=target)
+
+@app.route('/sites/add', methods=['GET', 'POST'])
 def sites_add():
-	return render_template('sites_add.html')
+    form = site.SiteForm()
 
-@app.route('/sites/edit/<int:siteid>')
+    if form.validate_on_submit():
+        sites.add(form)
+        return redirect('/sites')
+    else:
+        helpers.flash_errors(form.errors)
+
+    return render_template('sites_add.html', data=helpers.top_ten(), form=form)
+
+@app.route('/sites/edit/<int:siteid>', methods=['GET', 'POST'])
 def sites_edit(siteid):
-	return render_template('sites_edit.html')
+    form = site.SiteForm()
 
-@app.route('/sites/delete/<int:siteid>')
+    if form.validate_on_submit():
+        sites.edit(form, siteid)
+        return redirect('/sites/view/{}'.format(siteid))
+    else:
+        helpers.flash_errors(form.errors)
+
+    data = helpers.top_ten()
+    target = Site.query.filter_by(id=siteid).limit(1).first()
+
+    form.name.data = target.name
+    form.description.data = target.description
+    form.isactive.data = target.isactive
+    
+    return render_template('sites_edit.html', site=target, data=data, form=form)
+
+@app.route('/sites/delete/<int:siteid>', methods=['GET', 'POST'])
 def sites_delete(siteid):
-	return render_template('sites_delete.html')
+    sites.delete_id(siteid)
+    return redirect('/sites')
+
+
+
+
+# Impacts
+@app.route('/impacts')
+def impacts_list():
+    data = {
+        'active': Impact.query.filter_by(isactive=True).order_by(dbo.desc(Impact.id)),
+        'inactive': Impact.query.filter_by(isactive=False).order_by(dbo.desc(Impact.id))
+    }
+
+    return render_template('impacts_list.html', impacts=data)
+
+@app.route('/impacts/add', methods=['GET', 'POST'])
+def impacts_add():
+    form = impact.ImpactForm()
+
+    if form.validate_on_submit():
+        impacts.add(form)
+        return redirect('/impacts')
+    else:
+        helpers.flash_errors(form.errors)
+
+    return render_template('impacts_add.html', data=helpers.top_ten(), form=form)
+
+@app.route('/impacts/view/<int:impactid>')
+def impacts_view(impactid):
+    impact = Impact.query.filter_by(id=impactid).first()
+    return render_template('impacts_view.html', impact=impact)
+
+@app.route('/impacts/edit/<int:impactid>', methods=['GET', 'POST'])
+def impacts_edit(impactid):
+    form = impact.ImpactForm()
+
+    if form.validate_on_submit():
+        impacts.edit(form, impactid)
+        return redirect('/impacts')
+    else:
+        helpers.flash_errors(form.errors)
+
+    target = Impact.query.filter_by(id=impactid).limit(1).first()
+
+    form.name.data = target.name
+    form.description.data = target.description
+    form.isactive.data = target.isactive
+    
+    return render_template('impacts_edit.html', impact=target, data=helpers.top_ten(), form=form)
+
+@app.route('/impacts/delete/<int:impactid>', methods=['GET', 'POST'])
+def impacts_delete(impactid):
+    impacts.delete_id(impactid)
+    return redirect('/vlans')

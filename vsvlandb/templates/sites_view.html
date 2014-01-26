@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}VS VLAN DB - View Site{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+    <div class="panel panel-default">
+            <div class="panel-heading">
+                Site
+            </div>
+            <div class="panel-body">
+                <dl>
+                    <dt>Name</dt>
+                    <dd>{{site.name}}</dd><br />
+                    
+                    <dt>Description</dt>
+                    <dd>{{site.description}}</dd><br />
+
+                </dl>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Actions
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-pills nav-stacked">
+                    <li><a href="/sites/edit/{{site.id}}">
+                    <i class="fa fa-pencil fa-lg"></i> Edit</a></li>
+                    <li><a href="/sites/delete/{{site.id}}" class='text-danger'>
+                    <i class="fa fa-trash-o fa-lg"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                {% if site.subnets.all()|count >= 1 %}
+                    Subnets
+                {% else %}
+                    No Subnets Assigned
+                {% endif %}
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Subnet</th>
+                            <th>Netmask</th>
+                            <th>Active</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if site.subnets.all()|count >= 1 %}
+                        {% for subnet in site.subnets %}
+                            <tr>
+                                <td><a href="/subnets/view/{{subnet.id}}">{{subnet.subnet}}</a></td>
+                                <td><a href="/subnets/view/{{subnet.id}}">{{subnet.netmask}}</a></td>
+                                <td><a href="/subnets/view/{{subnet.id}}">{{subnet.isactive}}</a></td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                {% if site.vlans.all()|count >= 1 %}
+                    VLANs
+                {% else %}
+                    No VLANs Assigned
+                {% endif %}
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>VLAN</th>
+                            <th>Subnets</th>
+                            <th>Sites</th>
+                            <th>Active</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if site.vlans.all()|count >= 1 %}
+                        {% for vlan in site.vlans.all() %}
+                            <tr>
+                                <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
+                                <td>{{vlan.subnets|count}}</td>
+                                <td>{{vlan.sites|count}}</td>
+                                <td>{{vlan.isactive}}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

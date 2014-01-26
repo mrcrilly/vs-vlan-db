@@ -5,63 +5,31 @@
 	<div class="col-lg-4">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-					Edit Subnet
+				Edit Subnet
 			</div>
 			<div class="panel-body">
-				<form role="form">
-					<div class="form-group">
-						<label for="subnet">Subnet</label>
-						<input class="form-control" id="subnet" placeholder="Subnet">
-					</div>
-					<div class="form-group">
-						<label for="netmask">Netmask/CIDR</label>
-						<input class="form-control" id="netmask" placeholder="Netmask/CIDR">
-					</div>
-					<div class="form-group">
-						<label for="site">Site (Optional)</label>
-						<select multiple class="form-control" id="site">
-							<option>London 01</option>
-							<option>London 02</option>
-							<option>Paris 01</option>
-							<option>Belgium 01</option>
-							<option>New York 01</option>
-						</select>
-					</div>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" id="isactive"> Active?
-						</label>
-					</div>
-					<br />
-					<button type="submit" class="btn btn-success">Update</button>
-					<button type="submit" class="btn btn-danger">Cancel</button>
-				</form>
+				<form role="form" action="/subnets/edit/{{subnet.id}}" method="post" name="editsubnet">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.subnet.label(for="subnet") }}
+                        {{ form.subnet(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.sites.label(for="sites") }}
+                        {{ form.sites(class="form-control") }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isactive.label(for="isactive") }}
+                        {{ form.isactive }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Edit</button>
+                    <a href="/subnets/delete/{{subnet.id}}" class="btn btn-danger" role="button">Delete</a>
+                </form>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-8">
-		<div class="panel panel-default">
-			<div class="panel-heading">Last Ten Subnets</div>
-				<div class="panel-body">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>Subnet</th>
-								<th>Netmask</th>
-								<th>Cidr</th>
-								<th>Site</th>
-								<th>VLAN Count</th>
-								<th>Active</th>
-							</tr>
-						</thead>
-						<tbody>
-
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
+	    {% include "topten_side.html" %}
 	</div>
 </div>
 {% endblock %}

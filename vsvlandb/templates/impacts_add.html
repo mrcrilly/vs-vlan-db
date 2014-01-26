@@ -1,30 +1,22 @@
 {% extends "base.html" %}
-{% block title %}VS VLAN DB - Add VLAN{% endblock %}
+{% block title %}VS VLAN DB - Add Impact{% endblock %}
 {% block content %}
 <div class="row">
 	<div class="col-lg-4">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-					Add New VLAN
+					Add New Impact
 			</div>
 			<div class="panel-body">
-                <form role="form" action="/vlans/add" method="post" name="addvlan">
+                <form role="form" action="/impacts/add" method="post" name="addimpact">
                     {{ form.hidden_tag() }}
                     <div class="form-group">
-                        {{ form.vlan.label(for="vlanid") }}
-                        {{ form.vlan(class="form-control") }}
+                        {{ form.name.label(for="name") }}
+                        {{ form.name(class="form-control") }}
                     </div>
                     <div class="form-group">
-                        {{ form.subnets.label(for="subnet") }}
-                        {{ form.subnets(class="form-control") }}
-                    </div>
-                    <div class="form-group">
-                        {{ form.sites.label(for="site") }}
-                        {{ form.sites(class="form-control") }}
-                    </div>
-                    <div class="checkbox">
-                        {{ form.enhanced.label }}
-                        {{ form.enhanced }}
+                        {{ form.description.label(for='description') }}
+                        {{ form.description(class='form-control') }}
                     </div>
                     <div class="checkbox">
                         {{ form.isactive.label }}

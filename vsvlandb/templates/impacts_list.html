@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}VS VLAN DB - Impacts{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-lg-12">
+		
+		<div class="panel-group" id="accordion">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a href="#activetable" data-toggle="collapse" data-parent="#accordion">
+							{% if impacts['active'].all()|count >= 1 %}
+                            Active Impacts
+                        {% else %}
+                            No Active Impacts
+                        {% endif %}
+						</a>
+					</h4>
+				</div>
+				<div class="panel-collapse collapse in" id="activetable">
+					<div class="panel-body">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+                  <th>Impact</th>
+                  <th>Description</th>
+                  <th>Active</th>
+                </tr>
+							</thead>
+							<tbody>
+							{% if impacts['active'].all()|count >= 1 %}
+                  {% for impact in impacts['active'].all() %}
+                      <tr>
+                          <td><a href="/impacts/view/{{impact.id}}">{{impact.name}}</a></td>
+                          <td>{{impact.description}}</td>
+                          <td>{{impact.isactive}}</td>
+                      </tr>
+                  {% endfor %}
+              {% else %}
+                 <tr>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                 </tr>
+              {% endif %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+						<h4 class="panel-title">
+							<a href="#inactivetable" data-toggle="collapse" data-parent="#accordion">
+              {% if impacts['inactive'].all()|count >= 1 %}
+                  Inactive Impacts
+              {% else %}
+                  No Inactive Impacts
+              {% endif %}
+							</a>
+						</h4>
+				</div>
+				<div class="panel-collapse collapse" id="inactivetable">
+					<div class="panel-body">
+						<table class="table table-striped">
+							<thead>
+                <tr>
+                  <th>Impact</th>
+                  <th>Description</th>
+                  <th>Active</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% if impacts['inactive'].all()|count >= 1 %}
+                  {% for impact in impacts['inactive'].all() %}
+                      <tr>
+                          <td><a href="/impacts/view/{{impact.id}}">{{impact.name}}</a></td>
+                          <td>{{impact.description}}</td>
+                          <td>{{impact.isactive}}</td>
+                      </tr>
+                  {% endfor %}
+              {% else %}
+                 <tr>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                 </tr>
+              {% endif %}
+              </tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+{% endblock %}

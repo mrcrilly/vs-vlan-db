@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}VS VLAN DB - Edit Site{% endblock %}
+{% block title %}VS VLAN DB - Edit Impact{% endblock %}
 {% block content %}
 <div class="row">
-	<div class="col-lg-4">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-					Edit Site {{site.name}}
-			</div>
-			<div class="panel-body">
-				<form role="form" action="/sites/edit/{{site.id}}" method="post" name="editsite">
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                    Edit Impact {{impact.name}}
+            </div>
+            <div class="panel-body">
+                <form role="form" action="/impacts/edit/{{impact.id}}" method="post" name="editimpact">
                     {{ form.hidden_tag() }}
                     <div class="form-group">
                         {{ form.name.label(for="vlanid") }}
@@ -23,13 +23,13 @@
                         {{ form.isactive }}
                     </div>
                     <button type="submit" class="btn btn-success">Edit</button>
-                    <a href="/sites/delete/{{site.id}}" class="btn btn-danger" role="button">Delete</a>
+                    <a href="/impacts/delete/{{impact.id}}" class="btn btn-danger" role="button">Delete</a>
                 </form>
-			</div>
-		</div>
-	</div>
-	<div class="col-lg-8">
-	    {% include "topten_side.html" %}
-	</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        {% include "topten_side.html" %}
+    </div>
 </div>
 {% endblock %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}VS VLAN DB - Sites{% endblock %}
+{% block title %}VS VLAN DB - VLANs{% endblock %}
 {% block content %}
 <div class="row">
 	<div class="col-lg-12">
@@ -7,26 +7,48 @@
 		<div class="panel-group" id="accordion">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-						<h4 class="panel-title">
-							<a href="#activetable" data-toggle="collapse" data-parent="#accordion">
-								Active VLANs
-							</a>
-						</h4>
+					<h4 class="panel-title">
+						<a href="#activetable" data-toggle="collapse" data-parent="#accordion">
+							{% if vlans['active'].all()|count >= 1 %}
+                            Active VLANs
+                        {% else %}
+                            No Active VLANs
+                        {% endif %}
+						</a>
+					</h4>
 				</div>
 				<div class="panel-collapse collapse in" id="activetable">
 					<div class="panel-body">
-						<table class="table table-striped">
+						<table class="table table-striped table-hover">
 							<thead>
 								<tr>
-									<th>#</th>
-									<th>VLAN</th>
-									<th>Site</th>
-									<th>Subnet</th>
-									<th>OTV</th>
-								</tr>
+                  <th>VLAN</th>
+                  <th>Subnets</th>
+                  <th>Sites</th>
+                  <th>Enhanced</th>
+                  <th>Active</th>
+              </tr>
 							</thead>
 							<tbody>
-
+							{% if vlans['active'].all()|count >= 1 %}
+                  {% for vlan in vlans['active'].all() %}
+                      <tr class="clickable-row" href="/vlans/view/{{vlan.id}}">
+                          <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
+                          <td>{{vlan.subnets|count}}</td>
+                          <td>{{vlan.sites|count}}</td>
+                          <td><a href="/vlans/view/{{vlan.id}}">{{vlan.enhanced}}</a></td>
+                          <td><a href="/vlans/view/{{vlan.id}}">{{vlan.isactive}}</a></td>
+                      </tr>
+                  {% endfor %}
+              {% else %}
+                 <tr>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                     <td>N/D</td>
+                 </tr>
+              {% endif %}
 							</tbody>
 						</table>
 					</div>
@@ -37,25 +59,47 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#inactivetable" data-toggle="collapse" data-parent="#accordion">
-								Inactive VLANs
+              {% if vlans['inactive'].all()|count >= 1 %}
+                  Inactive VLANs
+              {% else %}
+                  No Inactive VLANs
+              {% endif %}
 							</a>
 						</h4>
 				</div>
 				<div class="panel-collapse collapse" id="inactivetable">
 					<div class="panel-body">
-						<table class="table table-striped">
+						<table class="table table-striped table-hover">
 							<thead>
-								<tr>
-									<th>#</th>
-									<th>VLAN</th>
-									<th>Site</th>
-									<th>Subnet</th>
-									<th>OTV</th>
-								</tr>
-							</thead>
-							<tbody>
-
-							</tbody>
+                <tr>
+                  <th>VLAN</th>
+                  <th>Subnets</th>
+                  <th>Sites</th>
+                  <th>Enhanced</th>
+                  <th>Active</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if vlans['inactive'].all()|count >= 1 %}
+                  {% for vlan in vlans['inactive'].all() %}
+                  <tr class="clickable-row" href="/vlans/view/{{vlan.id}}">
+                    <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
+                    <td>{{vlan.subnets|count}}</td>
+                    <td>{{vlan.sites|count}}</td>
+                    <td><a href="/vlans/view/{{vlan.id}}">{{vlan.enhanced}}</a></td>
+                    <td><a href="/vlans/view/{{vlan.id}}">{{vlan.isactive}}</a></td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td>N/D</td>
+                    <td>N/D</td>
+                    <td>N/D</td>
+                    <td>N/D</td>
+                    <td>N/D</td>
+                  </tr>
+                {% endif %}
+              </tbody>
 						</table>
 					</div>
 				</div>

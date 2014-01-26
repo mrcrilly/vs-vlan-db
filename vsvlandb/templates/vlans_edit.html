@@ -8,66 +8,37 @@
 					Edit VLAN
 			</div>
 			<div class="panel-body">
-				<form role="form">
-					<div class="form-group">
-						<label for="vlanId">VLAN ID</label>
-						<input class="form-control" id="vlanId" placeholder="VLAN ID">
-					</div>
-					<div class="form-group">
-						<label for="subnet">Subnet (Optional)</label>
-						<select class="form-control" id="subnet">
-							<option>10.8.0.0/16</option>
-							<option>10.8.24.0/24</option>
-							<option>10.24.0.0/16</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<label for="site">Site (Optional)</label>
-						<select multiple class="form-control" id="site">
-							<option>London 01</option>
-							<option>London 02</option>
-							<option>Paris 01</option>
-							<option>Belgium 01</option>
-							<option>New York 01</option>
-						</select>
-					</div>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox"> OTV VLAN
-						</label>
-					</div>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox"> Active?
-						</label>
-					</div>
-					<br />
-					<button type="submit" class="btn btn-success">Update</button>
-					<button type="submit" class="btn btn-danger">Cancel</button>
-				</form>
+                <form role="form" action="/vlans/edit/{{vlan.id}}" method="post" name="editvlan">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.vlan.label(for="vlanid") }}
+                        {{ form.vlan(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.subnets.label(for="subnet") }}
+                        {{ form.subnets(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.sites.label(for="site") }}
+                        {{ form.sites(class="form-control") }}
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            {{ form.enhanced }} Enhanced
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isactive.label(for="isactive") }}
+                        {{ form.isactive }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Edit</button>
+                    <a href="/vlans/delete/{{vlan.id}}" class="btn btn-danger" role="button">Delete</a>
+                </form>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-8">
-		<div class="panel panel-default">
-			<div class="panel-heading">Last Ten VLANs</div>
-				<div class="panel-body">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>VLAN</th>
-								<th>Site</th>
-								<th>Subnet</th>
-								<th>OTV</th>
-							</tr>
-						</thead>
-						<tbody>
-
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
+        {% include "topten_side.html" %}
 	</div>
 </div>
 {% endblock %}
