@@ -31,7 +31,7 @@
               {% if sites['active'].all()|count >= 1 %}
                   {% for site in sites['active'].all() %}
                       <tr>
-                          <td><a href="/sites/edit/{{site.id}}">{{site.name}}</a></td>
+                          <td><a href="/sites/view/{{site.id}}">{{site.name}}</a></td>
                           <td>{{site.subnets.all()|count}}</td>
                           <td>{{site.vlans.all()|count}}</td>
                       </tr>
@@ -75,7 +75,7 @@
               {% if sites['inactive'].all()|count >= 1 %}
                   {% for site in sites['inactive'].all() %}
                       <tr>
-                          <td><a href="/sites/edit/{{site.id}}">{{site.name}}</a></td>
+                          <td><a href="/sites/view/{{site.id}}">{{site.name}}</a></td>
                           <td>{{site.subnets.all()|count}}</td>
                           <td>{{site.vlans.all()|count}}</td>
                       </tr>

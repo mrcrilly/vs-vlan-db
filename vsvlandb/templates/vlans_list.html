@@ -36,8 +36,8 @@
                           <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
                           <td>{{vlan.subnets|count}}</td>
                           <td>{{vlan.sites|count}}</td>
-                          <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
-                          <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.isactive}}</a></td>
+                          <td><a href="/vlans/view/{{vlan.id}}">{{vlan.enhanced}}</a></td>
+                          <td><a href="/vlans/view/{{vlan.id}}">{{vlan.isactive}}</a></td>
                       </tr>
                   {% endfor %}
               {% else %}
@@ -86,8 +86,8 @@
                     <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
                     <td>{{vlan.subnets|count}}</td>
                     <td>{{vlan.sites|count}}</td>
-                    <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
-                    <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.isactive}}</a></td>
+                    <td><a href="/vlans/view/{{vlan.id}}">{{vlan.enhanced}}</a></td>
+                    <td><a href="/vlans/view/{{vlan.id}}">{{vlan.isactive}}</a></td>
                   </tr>
                   {% endfor %}
                 {% else %}
