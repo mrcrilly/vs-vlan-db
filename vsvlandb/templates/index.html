@@ -49,7 +49,6 @@
 									<th>Site</th>
 									<th>Enhanced</th>
                                     <th>Active</th>
-                                    <th>Actions</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -61,11 +60,6 @@
     									<td>{{vlan.sites|count}}</td>
     									<td><a href="/vlans/view/{{vlan.id}}">{{vlan.enhanced}}</a></td>
                                         <td><a href="/vlans/view/{{vlan.id}}">{{vlan.isactive}}</a></td>
-                                        <td>
-                                            <a class="btn btn-xs btn-success" href="#">View</a>
-                                            <a class="btn btn-xs btn-success" href="#">Edit</a>
-                                            <a class="btn btn-xs btn-danger" href="#">Delete</a>
-                                        </td>
     								</tr>
     							{% endfor %}
                             {% else %}
@@ -75,7 +69,7 @@
                                    <td>N/D</td>
                                    <td>N/D</td>
                                    <td>N/D</td>
-                                   <td>N/D</td>
+                                   <td></td>
                                </tr>
                             {% endif %}
 							</tbody>
@@ -107,7 +101,6 @@
 									<th>Sites</th>
 									<th>VLANs</th>
 									<th>Active</th>
-                                    <th>Actions</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -120,16 +113,10 @@
     									<td>{{subnet.sites|count}}</td>
                                         <td>{{subnet.vlans.all()|count}}</td>
                                         <td><a href="/subnets/view/{{subnet.id}}">{{subnet.isactive}}</a></td>
-                                        <td>
-                                            <a class="btn btn-xs btn-success" href="#">View</a>
-                                            <a class="btn btn-xs btn-success" href="#">Edit</a>
-                                            <a class="btn btn-xs btn-danger" href="#">Delete</a>
-                                        </td>
     								</tr>
     							{% endfor %}
                             {% else %}
                                  <tr>
-                                     <td>N/D</td>
                                      <td>N/D</td>
                                      <td>N/D</td>
                                      <td>N/D</td>
@@ -165,7 +152,6 @@
                                     <th>VLANs</th>
                                     <th>Subnets</th>
 									<th>Active</th>
-                                    <th>Actions</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -176,16 +162,10 @@
                                         <td><a href="/vlans">{{site.vlans.all()|count}}</a></td>
     									<td><a href="/subnets">{{site.subnets.all()|count}}</a></td>
     									<td><a href="/sites/view/{{site.id}}">{{site.isactive}}</a></td>
-                                        <td>
-                                            <a class="btn btn-xs btn-success" href="#">View</a>
-                                            <a class="btn btn-xs btn-success" href="#">Edit</a>
-                                            <a class="btn btn-xs btn-danger" href="#">Delete</a>
-                                        </td>
     								</tr>
     							{% endfor %}
                             {% else %}
                                 <tr>
-                                    <td>N/D</td>
                                     <td>N/D</td>
                                     <td>N/D</td>
                                     <td>N/D</td>
