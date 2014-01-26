@@ -11,12 +11,12 @@
 				<form role="form" action="/subnets/edit/{{subnet.id}}" method="post" name="editsubnet">
                     {{ form.hidden_tag() }}
                     <div class="form-group">
-                        {{ form.subnet.label(for="vlanid") }}
+                        {{ form.subnet.label(for="subnet") }}
                         {{ form.subnet(class="form-control") }}
                     </div>
                     <div class="form-group">
-                        {{ form.site.label(for="site") }}
-                        {{ form.site(class="form-control") }}
+                        {{ form.sites.label(for="sites") }}
+                        {{ form.sites(class="form-control") }}
                     </div>
                     <div class="checkbox">
                         {{ form.isactive.label(for="isactive") }}

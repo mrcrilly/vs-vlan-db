@@ -11,16 +11,16 @@
                 <form role="form" action="/vlans/add" method="post" name="addvlan">
                     {{ form.hidden_tag() }}
                     <div class="form-group">
-                        {{ form.vlanid.label(for="vlanid") }}
-                        {{ form.vlanid(class="form-control") }}
+                        {{ form.vlan.label(for="vlanid") }}
+                        {{ form.vlan(class="form-control") }}
                     </div>
                     <div class="form-group">
-                        {{ form.subnet.label(for="subnet") }}
-                        {{ form.subnet(class="form-control") }}
+                        {{ form.subnets.label(for="subnet") }}
+                        {{ form.subnets(class="form-control") }}
                     </div>
                     <div class="form-group">
-                        {{ form.site.label(for="site") }}
-                        {{ form.site(class="form-control") }}
+                        {{ form.sites.label(for="site") }}
+                        {{ form.sites(class="form-control") }}
                     </div>
                     <div class="checkbox">
                         {{ form.enhanced.label }}

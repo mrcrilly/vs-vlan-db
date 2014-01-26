@@ -31,7 +31,7 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#vlans" data-toggle="collapse" data-parent="#accordion">
-								{% if data['vlans'] %}
+								{% if data['vlans'].all()|count >= 1 %}
                                     10 Latest VLANs
                                 {% else %}
                                     No VLAN Data
@@ -52,7 +52,7 @@
 								</tr>
 							</thead>
 							<tbody>
-                            {% if data['vlans'] %}
+                            {% if data['vlans'].all()|count >= 1 %}
     							{% for vlan in data['vlans'].all() %}
     								<tr>
     									<td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
@@ -82,7 +82,7 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#subnets" data-toggle="collapse" data-parent="#accordion">
-                                {% if data['subnets'] %}
+                                {% if data['subnets'].all()|count >= 1 %}
                                     10 Latest Subnets
                                 {% else %}
                                     No Subnet Data
@@ -104,7 +104,7 @@
 								</tr>
 							</thead>
 							<tbody>
-                            {% if data['subnets'] %}
+                            {% if data['subnets'].all()|count >= 1 %}
     							{% for subnet in data['subnets'].all() %}
     								<tr>
     									<td><a href="/subnets/view/{{subnet.id}}">{{subnet.subnet}}</a></td>
@@ -135,7 +135,7 @@
 				<div class="panel-heading">
 						<h4 class="panel-title">
 							<a href="#sites" data-toggle="collapse" data-parent="#accordion">
-                            {% if data['sites'] %}
+                            {% if data['sites'].all()|count >= 1 %}
                                     10 Latest Sites
                                 {% else %}
                                     No Site Data
@@ -155,7 +155,7 @@
 								</tr>
 							</thead>
 							<tbody>
-                            {% if data['sites'] %}
+                            {% if data['sites'].all()|count >= 1 %}
     							{% for site in data['sites'].all() %}
     								<tr>
     									<td><a href="/sites/view/{{site.id}}">{{site.name}}</a></td>

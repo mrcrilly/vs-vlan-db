@@ -8,19 +8,19 @@
 					Edit VLAN
 			</div>
 			<div class="panel-body">
-                <form role="form" action="/vlans/edit/{{data['target'].id}}" method="post" name="editvlan">
+                <form role="form" action="/vlans/edit/{{vlan.id}}" method="post" name="editvlan">
                     {{ form.hidden_tag() }}
                     <div class="form-group">
-                        {{ form.vlanid.label(for="vlanid") }}
-                        {{ form.vlanid(class="form-control") }}
+                        {{ form.vlan.label(for="vlanid") }}
+                        {{ form.vlan(class="form-control") }}
                     </div>
                     <div class="form-group">
-                        {{ form.subnet.label(for="subnet") }}
-                        {{ form.subnet(class="form-control") }}
+                        {{ form.subnets.label(for="subnet") }}
+                        {{ form.subnets(class="form-control") }}
                     </div>
                     <div class="form-group">
-                        {{ form.site.label(for="site") }}
-                        {{ form.site(class="form-control") }}
+                        {{ form.sites.label(for="site") }}
+                        {{ form.sites(class="form-control") }}
                     </div>
                     <div class="checkbox">
                         <label>
@@ -32,7 +32,7 @@
                         {{ form.isactive }}
                     </div>
                     <button type="submit" class="btn btn-success">Edit</button>
-                    <a href="/vlans/delete/{{data['target'].id}}" class="btn btn-danger" role="button">Delete</a>
+                    <a href="/vlans/delete/{{vlan.id}}" class="btn btn-danger" role="button">Delete</a>
                 </form>
 			</div>
 		</div>

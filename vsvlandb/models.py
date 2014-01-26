@@ -21,7 +21,6 @@ subnet_sites = dbo.Table('subnet_sites',
                          dbo.Column('site_id', dbo.Integer, dbo.ForeignKey('site.id')))
 
 class VLAN(dbo.Model):
-
     id = dbo.Column(dbo.Integer, primary_key=True)
 
     vlan = dbo.Column(dbo.String(5))
@@ -35,8 +34,8 @@ class VLAN(dbo.Model):
 
     added = dbo.Column(dbo.DateTime)
 
-    def __init__(self, vlanid, subnets=[], sites=[], enhanced=False, impact=None, isactive=True):
-        self.vlan = vlanid
+    def __init__(self, vlan, subnets=[], sites=[], enhanced=False, impact=None, isactive=True):
+        self.vlan = vlan
         self.enhanced = enhanced
         self.isactive = isactive
 
@@ -59,10 +58,10 @@ class Subnet(dbo.Model):
 
     sites = dbo.relationship('Site', secondary=subnet_sites, backref=dbo.backref('subnets', lazy='dynamic'))
 
-    def __init__(self, subnet, netmask, cidr=None, sites=None, isactive=True):
-        self.subnet = subnet
-        self.netmask = netmask
-        self.cidr = cidr
+    def __init__(self, subnet, netmask="", cidr=None, sites=[], isactive=True):
+        self.subnet = str(subnet)
+        self.netmask = str(subnet.netmask)
+        self.cidr = str(subnet.prefixlen)
         self.isactive = isactive
 
         self.sites = sites
@@ -72,6 +71,7 @@ class Subnet(dbo.Model):
 
 class Site(dbo.Model):
     id = dbo.Column(dbo.Integer, primary_key=True)
+
     name = dbo.Column(dbo.String, unique=True)
     description = dbo.Column(dbo.String(30))
     isactive = dbo.Column(dbo.Boolean)

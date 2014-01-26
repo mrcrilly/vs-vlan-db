@@ -35,25 +35,17 @@ def vlans_list():
 
 @app.route('/vlans/add', methods=['GET', 'POST'])
 def vlans_add():
+    data = helpers.top_ten()
     form = vlan.VlanForm()
 
-    data = {}
-    data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
-    data['sites'] = Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id))
-
-    form.subnet.choices = [(i.id,i.subnet) for i in data['subnets'].all()]
-    form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
-
     if form.validate_on_submit():
-        vlans.add(form)
-        return redirect('/vlans')
+        target = VLAN(form.vlan.data)
+        form.populate_obj(target)
+        dbo.session.commit()
+
+        return redirect('/vlans/view/{}'.format(target.id))
     else:
-        for error in form.errors:
-            for e in form.errors[error]:
-                flash(u'{0}: {1}'.format(error, e), category='danger')
-
-
-    data['vlans'] = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id))
+        helpers.flash_errors(form.errors)
 
     return render_template('vlans_add.html', data=data, form=form)
 
@@ -64,48 +56,35 @@ def vlans_view(vlanid):
 
 @app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_edit(vlanid):
-    form = vlan.VlanForm()
+    data = helpers.top_ten()
 
-    data = {}
-    data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
-    data['sites'] = Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id))
+    target = VLAN.query.get(vlanid)
+    
+    if not target:
+        flash("Unable to find VLAN {}".format(vlan.vlan), category='warning')
+        return redirect('/vlans')
 
-    form.subnet.choices = [(i.id,i.subnet) for i in data['subnets'].all()]
-    form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
+    form = vlan.VlanForm(obj=target)
 
     if form.validate_on_submit():
-        vlans.edit(form, vlanid)
-        return redirect('/vlans')
-    else:
-        for error in form.errors:
-            for e in form.errors[error]:
-                flash(u'{0}: {1}'.format(error, e), category='danger')
+        form.populate_obj(target)
+        dbo.session.commit()
 
-    # We need ALL VLANs here so we can edit non-active VLANs
-    data['vlans'] = VLAN.query.filter_by().order_by(dbo.desc(VLAN.id))
+        flash("Updated VLAN {}".format(target.vlan), category='success')
+        return redirect('/vlans/view/{}'.format(target.id))
 
-    data['target'] = data['vlans'].filter_by(id=vlanid).limit(1).first()
-
-    # We only want active VLANs in the topten side bar, so we now
-    # refine the list to active VLANs
-    data['vlans'] = data['vlans'].filter_by(isactive=True)
-
-    form.vlanid.data = data['target'].vlan
-    
-    form.subnet.data = [(s.id,s.subnet) for s in data['target'].subnets]
-    form.subnet.default = [s.id for s in data['target'].subnets]
-
-    form.site.data = [(s.id,s.name) for s in data['target'].sites]
-    form.site.default = [s.id for s in data['target'].sites]
-
-    form.isactive.data = data['target'].isactive
-    form.enhanced.data = data['target'].enhanced
-    
-    return render_template('vlans_edit.html', data=data, form=form)
+    return render_template('vlans_edit.html', data=data, vlan=target, form=form)
 
 @app.route('/vlans/delete/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_delete(vlanid):
-    vlans.delete_id(vlanid)
+    target = VLAN.query.get(vlanid)
+    if target:
+        dbo.session.delete(target)
+        dbo.session.commit()
+        flash("Deleted VLAN {}".format(target.vlan), category='success')
+    else:
+        flash("Unable to find VLAN {}".format(target.vlan), category='warning')
+
     return redirect('/vlans')
 
 # Subnets
@@ -120,85 +99,58 @@ def subnets_list():
 
 @app.route('/subnets/view/<int:subnetid>')
 def subnets_view(subnetid):
-    subnet = Subnet.query.filter_by(id=subnetid).first()
-    return render_template('subnets_view.html', subnet=subnet)
+    target = Subnet.query.filter_by(id=subnetid).first()
+    return render_template('subnets_view.html', subnet=target)
 
 @app.route('/subnets/add', methods=['GET', 'POST'])
 def subnets_add():
     form = subnet.SubnetForm()
-
-    data = {}
-    data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
-    data['sites'] = Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id))
-    data['vlans'] = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id))
-
-    form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
+    data = helpers.top_ten()
 
     if form.validate_on_submit():
-        error = False
-        
         try:
-            ip = ipaddress.IPv4Network(form.subnet.data.decode())   
-        except ipaddress.AddressValueError:
-            flash(u"You provided an invalid IP address", category='danger')
-            error = True
-        except ipaddress.NetmaskValueError:
-            flash(u"You provided an invalid netmask.", category='danger')
-            error = True
+            ip = ipaddress.IPv4Network(form.subnet.data.decode())
+        except ipaddress.AddressValueError as e:
+            flash("Error: {}".format(e.message), category='danger')
+        else:
+            target = Subnet(ip)
+            form.populate_obj(target)
 
-        if error:
-            return redirect('subnets/add')
+            dbo.session.commit()
 
-        subnets.add(form)
-        return redirect('/subnets')
-    else:
-        helper.flash_errors(form.errors)
+            flash("Added subnet {}".format(form.subnet.data), category='success')
+            return redirect('/subnets/add')
+
+        return render_template('subnets_add.html', data=data, form=form)
 
     return render_template('subnets_add.html', data=data, form=form)
 
 @app.route('/subnets/edit/<int:subnetid>', methods=['GET', 'POST'])
 def subnets_edit(subnetid):
-    form = subnet.SubnetForm()
-
-    data = helpers.top_ten()
-    form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
+    target = Subnet.query.get(subnetid)
+    form = subnet.SubnetForm(obj=target)
 
     if form.validate_on_submit():
-        error = False
-        
-        try:
-            ip = ipaddress.IPv4Network(form.subnet.data.decode())   
-        except ipaddress.AddressValueError:
-            flash(u"You provided an invalid IP address", category='danger')
-            error = True
-        except ipaddress.NetmaskValueError:
-            flash(u"You provided an invalid netmask.", category='danger')
-            error = True
+        form.populate_obj(target)
+        dbo.session.commit()
+        flash("Edited subnet {}".format(form.subnet.data), category='success')
 
-        if error:
-            return redirect('subnets/edit/{}'.format(subnetid))
-
-        subnets.edit(form, subnetid)
         return redirect('/subnets')
-    else:
-        helpers.flash_errors(form.errors)
 
-    target = Subnet.query.filter_by(id=subnetid).limit(1).first()
-
-    form.subnet.data = target.subnet
-    form.site.data = [(s.id,s.name) for s in target.sites]
-    form.site.default = [s.id for s in target.sites]
-
-    form.isactive.data = target.isactive
-    
-    return render_template('subnets_edit.html', subnet=target, data=data, form=form)
+    return render_template('subnets_edit.html', data=helpers.top_ten(), subnet=target, form=form)
 
 @app.route('/subnets/delete/<int:subnetid>')
 def subnets_delete(subnetid):
-    subnets.delete_id(subnetid)
+    target = Subnet.query.get(subnetid)
+
+    if target:
+        dbo.session.delete(target)
+        dbo.session.commit()
+        flash("Deleted subnet {}".format(target.subnet), category='success')
+    else:
+        flash("Unable to find subnet {}".format(subnet.subnet), category='warning')
+
     return redirect('/subnets')
-
-
 
 
 #Sites
@@ -213,8 +165,8 @@ def sites_list():
 
 @app.route('/sites/view/<int:siteid>')
 def sites_view(siteid):
-    site = Site.query.filter_by(id=siteid).first()
-    return render_template('sites_view.html', site=site)
+    target = Site.query.filter_by(id=siteid).first()
+    return render_template('sites_view.html', site=target)
 
 @app.route('/sites/add', methods=['GET', 'POST'])
 def sites_add():
@@ -234,7 +186,7 @@ def sites_edit(siteid):
 
     if form.validate_on_submit():
         sites.edit(form, siteid)
-        return redirect('/sites')
+        return redirect('/sites/view/{}'.format(siteid))
     else:
         helpers.flash_errors(form.errors)
 
