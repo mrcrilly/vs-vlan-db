@@ -12,6 +12,10 @@ vlan_sites = dbo.Table('vlan_sites',
                        dbo.Column('site_id', dbo.Integer, dbo.ForeignKey('site.id')),
                        dbo.Column('vlan_id', dbo.Integer, dbo.ForeignKey('VLAN.id')))
 
+vlan_impacts = dbo.Table('vlan_impacts',
+                        dbo.Column('impact_id', dbo.Integer, dbo.ForeignKey('impact.id')),
+                        dbo.Column('vlan_id', dbo.Integer, dbo.ForeignKey('VLAN.id')))
+
 subnet_sites = dbo.Table('subnet_sites',
                          dbo.Column('subnet_id', dbo.Integer, dbo.ForeignKey('subnet.id')),
                          dbo.Column('site_id', dbo.Integer, dbo.ForeignKey('site.id')))
@@ -27,6 +31,7 @@ class VLAN(dbo.Model):
 
     subnets = dbo.relationship('Subnet', secondary=vlan_subnets, backref=dbo.backref('vlans', lazy='dynamic'))
     sites = dbo.relationship('Site', secondary=vlan_sites, backref=dbo.backref('vlans', lazy='dynamic'))
+    impacts = dbo.relationship('Impact', secondary=vlan_impacts, backref=dbo.backref('vlans', lazy='dynamic'))
 
     added = dbo.Column(dbo.DateTime)
 
@@ -85,10 +90,10 @@ class Impact(dbo.Model):
     description = dbo.Column(dbo.String(30))
     isactive = dbo.Column(dbo.Boolean)
 
-    def __init__(self, impact, description=None, isactive=True):
-        self.impact = impact
+    def __init__(self, name, description=None, isactive=True):
+        self.name = name
         self.isactive = isactive
         self.description = description
 
     def __repr__(self):
-        return '<Impact {0} ({1})>'.format(self.impact, self.isactive)
+        return '<Impact Level {0} ({1})>'.format(self.name, self.isactive)

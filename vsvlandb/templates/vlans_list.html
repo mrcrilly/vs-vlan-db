@@ -19,7 +19,7 @@
 				</div>
 				<div class="panel-collapse collapse in" id="activetable">
 					<div class="panel-body">
-						<table class="table table-striped">
+						<table class="table table-striped table-hover">
 							<thead>
 								<tr>
                   <th>VLAN</th>
@@ -32,7 +32,7 @@
 							<tbody>
 							{% if vlans['active'].all()|count >= 1 %}
                   {% for vlan in vlans['active'].all() %}
-                      <tr>
+                      <tr class="clickable-row" href="/vlans/view/{{vlan.id}}">
                           <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
                           <td>{{vlan.subnets|count}}</td>
                           <td>{{vlan.sites|count}}</td>
@@ -69,7 +69,7 @@
 				</div>
 				<div class="panel-collapse collapse" id="inactivetable">
 					<div class="panel-body">
-						<table class="table table-striped">
+						<table class="table table-striped table-hover">
 							<thead>
                 <tr>
                   <th>VLAN</th>
@@ -82,7 +82,7 @@
               <tbody>
                 {% if vlans['inactive'].all()|count >= 1 %}
                   {% for vlan in vlans['inactive'].all() %}
-                  <tr>
+                  <tr class="clickable-row" href="/vlans/view/{{vlan.id}}">
                     <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
                     <td>{{vlan.subnets|count}}</td>
                     <td>{{vlan.sites|count}}</td>

@@ -23,6 +23,7 @@
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Description</th>
                   <th>Subnets</th>
                   <th>VLANs</th>
                 </tr>
@@ -32,6 +33,7 @@
                   {% for site in sites['active'].all() %}
                       <tr>
                           <td><a href="/sites/view/{{site.id}}">{{site.name}}</a></td>
+                          <td><a href="/sites/view/{{site.id}}">{{site.description}}</a></td>
                           <td>{{site.subnets.all()|count}}</td>
                           <td>{{site.vlans.all()|count}}</td>
                       </tr>

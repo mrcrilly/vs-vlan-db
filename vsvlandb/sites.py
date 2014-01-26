@@ -36,7 +36,7 @@ def edit(form, site_id, flash_msg=True):
 		flash("Updated Site {0}".format(form.name.data), category='success')
 
 def add(form, flash_msg=True):
-	site = Site(name=form.name.data, isactive=form.isactive.data)
+	site = Site(name=form.name.data, description=form.description.data, isactive=form.isactive.data)
 
 	dbo.session.add(site)
 	dbo.session.commit()

@@ -1,8 +1,7 @@
 
-from vsvlandb import app, dbo, vlans, subnets, sites
-from vsvlandb.models import VLAN, Subnet, Site
-
-from vsvlandb.forms import vlan, subnet, site
+from vsvlandb import app, dbo, vlans, subnets, sites, impacts, helpers
+from vsvlandb.models import VLAN, Subnet, Site, Impact
+from vsvlandb.forms import vlan, subnet, site, impact
 
 from flask import redirect, request, render_template, url_for, flash
 
@@ -153,9 +152,7 @@ def subnets_add():
         subnets.add(form)
         return redirect('/subnets')
     else:
-        for error in form.errors:
-            for e in form.errors[error]:
-                flash(u'{0}: {1}'.format(error, e), category='danger')
+        helper.flash_errors(form.errors)
 
     return render_template('subnets_add.html', data=data, form=form)
 
@@ -163,11 +160,7 @@ def subnets_add():
 def subnets_edit(subnetid):
     form = subnet.SubnetForm()
 
-    data = {}
-    # data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
-    data['vlans'] = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id))
-    data['sites'] = Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id))
-
+    data = helpers.top_ten()
     form.site.choices = [(i.id,i.name) for i in data['sites'].all()]
 
     if form.validate_on_submit():
@@ -188,32 +181,24 @@ def subnets_edit(subnetid):
         subnets.edit(form, subnetid)
         return redirect('/subnets')
     else:
-        for error in form.errors:
-            for e in form.errors[error]:
-                flash(u'{0}: {1}'.format(error, e), category='danger')
+        helpers.flash_errors(form.errors)
 
-    # We need ALL VLANs here so we can edit non-active VLANs
-    data['subnets'] = Subnet.query.filter_by().order_by(dbo.desc(Subnet.id))
+    target = Subnet.query.filter_by(id=subnetid).limit(1).first()
 
-    data['target'] = data['subnets'].filter_by(id=subnetid).limit(1).first()
+    form.subnet.data = target.subnet
+    form.site.data = [(s.id,s.name) for s in target.sites]
+    form.site.default = [s.id for s in target.sites]
 
-    # We only want active VLANs in the topten side bar, so we now
-    # refine the list to active VLANs
-    data['subnets'] = data['subnets'].filter_by(isactive=True)
-
-    form.subnet.data = data['target'].subnet
-
-    form.site.data = [(s.id,s.name) for s in data['target'].sites]
-    form.site.default = [s.id for s in data['target'].sites]
-
-    form.isactive.data = data['target'].isactive
+    form.isactive.data = target.isactive
     
-    return render_template('subnets_edit.html', data=data, form=form)
+    return render_template('subnets_edit.html', subnet=target, data=data, form=form)
 
 @app.route('/subnets/delete/<int:subnetid>')
 def subnets_delete(subnetid):
     subnets.delete_id(subnetid)
     return redirect('/subnets')
+
+
 
 
 #Sites
@@ -235,67 +220,87 @@ def sites_view(siteid):
 def sites_add():
     form = site.SiteForm()
 
-    data = {}
-    data['vlans'] = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id))
-    data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
-    data['sites'] = Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id))
-
     if form.validate_on_submit():
         sites.add(form)
         return redirect('/sites')
     else:
-        for error in form.errors:
-            for e in form.errors[error]:
-                flash(u'{0}: {1}'.format(error, e), category='danger')
+        helpers.flash_errors(form.errors)
 
-    return render_template('sites_add.html', data=data, form=form)
+    return render_template('sites_add.html', data=helpers.top_ten(), form=form)
 
 @app.route('/sites/edit/<int:siteid>', methods=['GET', 'POST'])
 def sites_edit(siteid):
     form = site.SiteForm()
 
-    data = {}
-    data['subnets'] = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id))
-    data['vlans'] = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id))
-
     if form.validate_on_submit():
         sites.edit(form, siteid)
         return redirect('/sites')
     else:
-        for error in form.errors:
-            for e in form.errors[error]:
-                flash(u'{0}: {1}'.format(error, e), category='danger')
+        helpers.flash_errors(form.errors)
 
-    # We need ALL VLANs here so we can edit non-active VLANs
-    data['sites'] = Site.query.filter_by().order_by(dbo.desc(Site.id))
+    data = helpers.top_ten()
+    target = Site.query.filter_by(id=siteid).limit(1).first()
 
-    data['target'] = data['sites'].filter_by(id=siteid).limit(1).first()
-
-    # We only want active VLANs in the topten side bar, so we now
-    # refine the list to active VLANs
-    data['sites'] = data['sites'].filter_by(isactive=True)
-
-    form.name.data = data['target'].name
-    form.isactive.data = data['target'].isactive
+    form.name.data = target.name
+    form.description.data = target.description
+    form.isactive.data = target.isactive
     
-    return render_template('sites_edit.html', data=data, form=form)
+    return render_template('sites_edit.html', site=target, data=data, form=form)
 
 @app.route('/sites/delete/<int:siteid>', methods=['GET', 'POST'])
 def sites_delete(siteid):
     sites.delete_id(siteid)
     return redirect('/sites')
 
-# Coming soon.
-# Impact
+
+
+
+# Impacts
 @app.route('/impacts')
-def impact_list():
-    pass
+def impacts_list():
+    data = {
+        'active': Impact.query.filter_by(isactive=True).order_by(dbo.desc(Impact.id)),
+        'inactive': Impact.query.filter_by(isactive=False).order_by(dbo.desc(Impact.id))
+    }
 
-def impact_add():
-    pass
+    return render_template('impacts_list.html', impacts=data)
 
-def impact_edit():
-    pass
+@app.route('/impacts/add', methods=['GET', 'POST'])
+def impacts_add():
+    form = impact.ImpactForm()
 
-def impact_delete():
-    pass
+    if form.validate_on_submit():
+        impacts.add(form)
+        return redirect('/impacts')
+    else:
+        helpers.flash_errors(form.errors)
+
+    return render_template('impacts_add.html', data=helpers.top_ten(), form=form)
+
+@app.route('/impacts/view/<int:impactid>')
+def impacts_view(impactid):
+    impact = Impact.query.filter_by(id=impactid).first()
+    return render_template('impacts_view.html', impact=impact)
+
+@app.route('/impacts/edit/<int:impactid>', methods=['GET', 'POST'])
+def impacts_edit(impactid):
+    form = impact.ImpactForm()
+
+    if form.validate_on_submit():
+        impacts.edit(form, impactid)
+        return redirect('/impacts')
+    else:
+        helpers.flash_errors(form.errors)
+
+    target = Impact.query.filter_by(id=impactid).limit(1).first()
+
+    form.name.data = target.name
+    form.description.data = target.description
+    form.isactive.data = target.isactive
+    
+    return render_template('impacts_edit.html', impact=target, data=helpers.top_ten(), form=form)
+
+@app.route('/impacts/delete/<int:impactid>', methods=['GET', 'POST'])
+def impacts_delete(impactid):
+    impacts.delete_id(impactid)
+    return redirect('/vlans')
