@@ -11,13 +11,13 @@ class ApiVLANs(restful.Resource):
         return {'get': 'Not implemented'}
 
     def post(self):
-    	return {'post': 'Not implemented'}
+        return {'post': 'Not implemented'}
 
-	def put(self):
-		return {'put': 'Not implemented'}
+    def put(self):
+        return {'put': 'Not implemented'}
 
-	def delete(self):
-		return {'delete': 'Not implemented'}
+    def delete(self):
+        return {'delete': 'Not implemented'}
 
 class ApiSubnets(restful.Resource):
 
@@ -26,13 +26,13 @@ class ApiSubnets(restful.Resource):
         pass
 
     def post(self):
-    	return {'post': 'Not implemented'}
+        return {'post': 'Not implemented'}
 
-	def put(self):
-		return {'put': 'Not implemented'}
+    def put(self):
+        return {'put': 'Not implemented'}
 
-	def delete(self):
-		return {'delete': 'Not implemented'}
+    def delete(self):
+        return {'delete': 'Not implemented'}
 
 class ApiSites(restful.Resource):
 
@@ -40,13 +40,13 @@ class ApiSites(restful.Resource):
         return {'get': 'Not implemented'}
 
     def post(self):
-    	return {'post': 'Not implemented'}
+        return {'post': 'Not implemented'}
 
-	def put(self):
-		return {'put': 'Not implemented'}
+    def put(self):
+        return {'put': 'Not implemented'}
 
-	def delete(self):
-		return {'delete': 'Not implemented'}
+    def delete(self):
+        return {'delete': 'Not implemented'}
 
 # Add them to the API:
 api.add_resource(ApiVLANs, '/api/vlans/')
