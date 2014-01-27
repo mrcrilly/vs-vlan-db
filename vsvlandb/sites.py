@@ -8,38 +8,32 @@ import sys
 from flask import flash, redirect
 
 def delete_id(site_id, flash_msg=True):
-	site = Site.query.filter_by(id=site_id).limit(1).first()
+    site = Site.query.filter_by(id=site_id).limit(1).first()
 
-	if site:
-		dbo.session.delete(site)
-		dbo.session.commit()
+    if site:
+        dbo.session.delete(site)
+        dbo.session.commit()
 
-		if flash_msg:
-			flash("Deleted Site {}".format(site.name), category='success')
+        if flash_msg:
+            flash("Deleted Site {}".format(site.name), category='success')
 
 def delete_site(site, flash_msg=True):
-	sites = Site.query.filter_by(name=site).all()
+    sites = Site.query.filter_by(name=site).all()
 
-	if sites:
-		for site in sites:
-			dbo.session.delete(site)
-			dbo.session.commit()
+    if sites:
+        for site in sites:
+            dbo.session.delete(site)
+            dbo.session.commit()
 
-		if flash_msg:
-			flash("Deleted site {}".format(site), category='success')
+        if flash_msg:
+            flash("Deleted site {}".format(site), category='success')
 
 def edit(form, site_id, flash_msg=True):
-	delete_id(site_id, False)
-	add(form, False)
+    delete_id(site_id, False)
+    add(form, False)
 
-	if flash_msg:
-		flash("Updated Site {0}".format(form.name.data), category='success')
+    if flash_msg:
+        flash("Updated Site {0}".format(form.name.data), category='success')
 
 def add(form, flash_msg=True):
-	site = Site(name=form.name.data, description=form.description.data, isactive=form.isactive.data)
-
-	dbo.session.add(site)
-	dbo.session.commit()
-
-	if flash_msg:
-		flash("Added Site {0}".format(site.name), category='success')
+    pass

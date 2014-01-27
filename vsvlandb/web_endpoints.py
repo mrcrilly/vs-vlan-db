@@ -5,6 +5,8 @@ from vsvlandb.forms import vlan, subnet, site, impact
 
 from flask import redirect, request, render_template, url_for, flash
 
+from sqlalchemy.exc import IntegrityError
+
 import re
 import ipaddress
 import sys
@@ -41,7 +43,13 @@ def vlans_add():
         if target:
             form.populate_obj(target)
             dbo.session.add(target)
-            dbo.session.commit()
+
+            try:
+                dbo.session.commit()
+            except IntegrityError as e:
+                dbo.session.rollback()
+                flash("That VLAN already exists", category='danger')
+                return render_template('vlans_add.html', data=data, form=form)
 
             flash("Added VLAN {}".format(target.vlan), category='success')
             return redirect('/vlans/view/{}'.format(target.id))
@@ -120,8 +128,15 @@ def subnets_add():
         else:
             target = Subnet(ip)
             form.populate_obj(target)
-            dbo.session.add(target)
-            dbo.session.commit()
+
+            try:
+                dbo.session.add(target)
+                dbo.session.commit()
+            except IntegrityError as e:
+                flash("That subnet already exists", category='danger')
+                dbo.session.rollback()
+
+                return render_template('subnets_add.html', data=data, form=form)
 
             flash("Added subnet {}".format(form.subnet.data), category='success')
             return redirect('/subnets/add')
@@ -190,8 +205,20 @@ def sites_add():
     form = site.SiteForm()
 
     if form.validate_on_submit():
-        sites.add(form)
+        target = Site(name=form.name.data)
+        form.populate_obj(target)
+    
+        try:
+            dbo.session.add(target)
+            dbo.session.commit()
+        except IntegrityError as e:
+            flash("That site already exists", category='danger')
+            dbo.session.rollback()
+
+            return render_template('sites_add.html', data=helpers.top_ten(), form=form)
+
         return redirect('/sites')
+
     else:
         helpers.flash_errors(form.errors)
 
