@@ -1,6 +1,6 @@
 
 from vsvlandb import app, dbo, vlans, subnets, sites, impacts, helpers
-from vsvlandb.models import VLAN, Subnet, Site, Impact
+from vsvlandb.models import VLAN, Subnet, Site, Impact, vlan_subnets
 from vsvlandb.forms import vlan, subnet, site, impact
 
 from flask import redirect, request, render_template, url_for, flash
@@ -42,6 +42,16 @@ def vlans_add():
 
         if target:
             form.populate_obj(target)
+
+            existing = VLAN.query.filter_by(vlan=target.vlan).all()
+            if existing:
+                for i in target.subnets:
+                    for v in existing:
+                        for j in v.subnets:
+                            if i == j:
+                                flash("New VLAN has a subnet clash with existing VLAN: {0} == {1}".format(i, j), category='danger')
+                                return render_template('vlans_add.html', data=data, form=form)  
+
             dbo.session.add(target)
 
             try:
@@ -79,6 +89,16 @@ def vlans_edit(vlanid):
 
     if form.validate_on_submit():
         form.populate_obj(target)
+
+        existing = VLAN.query.filter_by(vlan=target.vlan).all()
+        if existing:
+            for i in target.subnets:
+                for v in existing:
+                    for j in v.subnets:
+                        if i == j:
+                            flash("New VLAN has a subnet clash with existing VLAN: {0} == {1}".format(i.subnet, j.subnet), category='danger')
+                            return render_template('vlans_edit.html', data=data, vlan=target, form=form)
+
         dbo.session.commit()
 
         flash("Updated VLAN {}".format(target.vlan), category='success')
