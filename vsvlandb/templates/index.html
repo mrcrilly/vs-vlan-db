@@ -2,185 +2,100 @@
 {% block title %}VS VLAN DB - Dashboard{% endblock %}
 {% block content %}
 <div class="row">
-	<div class="col-lg-4">
+	<div class="col-lg-6">
 		<div class="dashboard-element">
 			<h2 class="text-center">VLANS</h2>
-			<p class="text-center text-success"><a href="/vlans">{{data['vlans'].all()|count}}</a></p>
+			<p class="text-center text-success"><a href="/vlans">{{vlans.all()|count}}</a></p>
 		</div>
 	</div>
-	<div class="col-lg-4">
+	<div class="col-lg-6">
 		<div class="dashboard-element">
 			<h2 class="text-center">Subnets</h2>
-			<p class="text-center text-success"><a href="/subnets">{{data['subnets'].all()|count}}</a></p>
-		</div>
-	</div>
-	<div class="col-lg-4">
-		<div class="dashboard-element">
-			<h2 class="text-center">Sites</h2>
-			<p class="text-center text-success"><a href="/sites">{{data['sites'].all()|count}}</a></p>
+			<p class="text-center text-success"><a href="/subnets">{{subnets.all()|count}}</a></p>
 		</div>
 	</div>
 </div>
 <br />
 <div class="row">
-	<div class="col-lg-12">
-		
-		<div class="panel-group" id="accordion">
-
-			<div class="panel panel-default">
-				<div class="panel-heading">
-						<h4 class="panel-title">
-							<a href="#vlans" data-toggle="collapse" data-parent="#accordion">
-								{% if data['vlans'].all()|count >= 1 %}
-                                    10 Latest VLANs
-                                {% else %}
-                                    No VLAN Data
-                                {% endif %}
-							</a>
-						</h4>
-				</div>
-				<div class="panel-collapse collapse in" id="vlans">
-					<div class="panel-body">
-						<table class="table table-striped">
-							<thead>
-								<tr>
-									<th>VLAN</th>
-									<th>Subnet</th>
-									<th>Site</th>
-									<th>Enhanced</th>
-                                    <th>Active</th>
-								</tr>
-							</thead>
-							<tbody>
-                            {% if data['vlans'].all()|count >= 1 %}
-    							{% for vlan in data['vlans'].all() %}
-    								<tr>
-    									<td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
-    									<td>{{vlan.subnets|count}}</td>
-    									<td>{{vlan.sites|count}}</td>
-    									<td><a href="/vlans/view/{{vlan.id}}">{{vlan.enhanced}}</a></td>
-                                        <td><a href="/vlans/view/{{vlan.id}}">{{vlan.isactive}}</a></td>
-    								</tr>
-    							{% endfor %}
-                            {% else %}
-                               <tr>
-                                   <td>N/D</td>
-                                   <td>N/D</td>
-                                   <td>N/D</td>
-                                   <td>N/D</td>
-                                   <td>N/D</td>
-                                   <td></td>
-                               </tr>
-                            {% endif %}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-
-			<div class="panel panel-default">
-				<div class="panel-heading">
-						<h4 class="panel-title">
-							<a href="#subnets" data-toggle="collapse" data-parent="#accordion">
-                                {% if data['subnets'].all()|count >= 1 %}
-                                    10 Latest Subnets
-                                {% else %}
-                                    No Subnet Data
-                                {% endif %}
-							</a>
-						</h4>
-				</div>
-				<div class="panel-collapse collapse" id="subnets">
-					<div class="panel-body">
-						<table class="table table-striped">
-							<thead>
-								<tr>
-									<th>Subnet</th>
-									<th>Netmask</th>
-									<th>Cidr</th>
-									<th>Sites</th>
-									<th>VLANs</th>
-									<th>Active</th>
-								</tr>
-							</thead>
-							<tbody>
-                            {% if data['subnets'].all()|count >= 1 %}
-    							{% for subnet in data['subnets'].all() %}
-    								<tr>
-    									<td><a href="/subnets/view/{{subnet.id}}">{{subnet.subnet}}</a></td>
-    									<td><a href="/subnets/view/{{subnet.id}}">{{subnet.netmask}}</a></td>
-    									<td><a href="/subnets/view/{{subnet.id}}">{{subnet.cidr}}</a></td>
-    									<td>{{subnet.sites|count}}</td>
-                                        <td>{{subnet.vlans.all()|count}}</td>
-                                        <td><a href="/subnets/view/{{subnet.id}}">{{subnet.isactive}}</a></td>
-    								</tr>
-    							{% endfor %}
-                            {% else %}
-                                 <tr>
-                                     <td>N/D</td>
-                                     <td>N/D</td>
-                                     <td>N/D</td>
-                                     <td>N/D</td>
-                                     <td>N/D</td>
-                                     <td>N/D</td>                                     
-                                 </tr>
-                            {% endif %}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-
-			<div class="panel panel-default">
-				<div class="panel-heading">
-						<h4 class="panel-title">
-							<a href="#sites" data-toggle="collapse" data-parent="#accordion">
-                            {% if data['sites'].all()|count >= 1 %}
-                                    10 Latest Sites
-                                {% else %}
-                                    No Site Data
-                                {% endif %}
-							</a>
-						</h4>
-				</div>
-				<div class="panel-collapse collapse" id="sites">
-					<div class="panel-body">
-						<table class="table table-striped">
-							<thead>
-								<tr>
-									<th>Name</th>
-                                    <th>VLANs</th>
-                                    <th>Subnets</th>
-									<th>Active</th>
-								</tr>
-							</thead>
-							<tbody>
-                            {% if data['sites'].all()|count >= 1 %}
-    							{% for site in data['sites'].all() %}
-    								<tr>
-    									<td><a href="/sites/view/{{site.id}}">{{site.name}}</a></td>
-                                        <td><a href="/vlans">{{site.vlans.all()|count}}</a></td>
-    									<td><a href="/subnets">{{site.subnets.all()|count}}</a></td>
-    									<td><a href="/sites/view/{{site.id}}">{{site.isactive}}</a></td>
-    								</tr>
-    							{% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td>N/D</td>
-                                    <td>N/D</td>
-                                    <td>N/D</td>
-                                    <td>N/D</td>
-                                    <td>N/D</td>
-                                </tr>
-                            {% endif %}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-
-		</div>
-
+	<div class="col-lg-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+          {% if vlans.all()|count >= 1 %}
+              20 Latest VLANs
+          {% else %}
+              No VLANs available
+         {% endif %}
+          </div>
+          <table class="table table-striped table-hover">
+              <thead>
+                  <tr>
+                      <th>VLAN</th>
+                      <th>Subnets</th>
+                      <th>Sites</th>
+                      <th>Enhanced</th>
+                      <th>Impact</th>
+                  </tr>
+              </thead>
+              <tbody>
+              {% if vlans.all()|count >= 1 %}
+                  {% for vlan in vlans.all() %}
+                  <tr>
+                      <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
+                      <td>{{vlan.subnets|count}}</td>
+                      <td>{{vlan.sites|count}}</td>
+                      <td>{{vlan.enhanced}}</td>
+                      <td>{{vlan.impact.name}}</td>
+                  </tr>
+                  {% endfor %}
+              {% else %}
+                  <tr>
+                      <td>N/D</td>
+                      <td>N/D</td>
+                      <td>N/D</td>
+                      <td>N/D</td>
+                      <td>N/D</td>
+                  </tr>
+              {% endif %}
+              </tbody>
+          </table>
+        </div>
 	</div>
+    <div class="col-lg-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+          {% if subnets.all()|count >= 1 %}
+              20 Latest Subnets
+          {% else %}
+              No subnets available
+         {% endif %}
+          </div>
+          <table class="table table-striped table-hover">
+              <thead>
+                  <tr>
+                      <th>Subnet</th>
+                      <th>VLANs</th>
+                      <th>Sites</th>
+                  </tr>
+              </thead>
+              <tbody>
+              {% if subnets.all()|count >= 1 %}
+                  {% for subnet in subnets.all() %}
+                  <tr>
+                      <td><a href="/subnets/view/{{subnet.id}}">{{subnet.subnet}}</a></td>
+                      <td>{{subnet.vlans.all()|count}}</td>
+                      <td>{{subnet.sites|count}}</td>
+                  </tr>
+                  {% endfor %}
+              {% else %}
+                  <tr>
+                      <td>N/D</td>
+                      <td>N/D</td>
+                      <td>N/D</td>
+                  </tr>
+              {% endif %}
+              </tbody>
+          </table>
+        </div>
+    </div>
 </div>
 {% endblock %}
