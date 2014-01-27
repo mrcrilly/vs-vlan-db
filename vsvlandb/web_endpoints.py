@@ -15,13 +15,10 @@ from datetime import datetime
 # Root/Index
 @app.route('/')
 def index():
-    data = {
-        'vlans': VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id)).limit(10),
-        'subnets': Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id)).limit(10),
-        'sites': Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id)).limit(10)
-    }
+    vlan_data = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id)).limit(20)
+    subn_data = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id)).limit(20)
 
-    return render_template('index.html', data=data)
+    return render_template('index.html', vlans=vlan_data, subnets=subn_data)
 
 # VLANS
 @app.route('/vlans')
@@ -40,10 +37,17 @@ def vlans_add():
 
     if form.validate_on_submit():
         target = VLAN(form.vlan.data)
-        form.populate_obj(target)
-        dbo.session.commit()
 
-        return redirect('/vlans/view/{}'.format(target.id))
+        if target:
+            form.populate_obj(target)
+            dbo.session.add(target)
+            dbo.session.commit()
+
+            flash("Added VLAN {}".format(target.vlan), category='success')
+            return redirect('/vlans/view/{}'.format(target.id))
+        else:
+            flash("Problem adding VLAN {}".format(target.vlan), category='warning')
+            return render_template('vlans_add.html', data=data, form=form)
     else:
         helpers.flash_errors(form.errors)
 
@@ -57,7 +61,6 @@ def vlans_view(vlanid):
 @app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_edit(vlanid):
     data = helpers.top_ten()
-
     target = VLAN.query.get(vlanid)
     
     if not target:
@@ -72,6 +75,8 @@ def vlans_edit(vlanid):
 
         flash("Updated VLAN {}".format(target.vlan), category='success')
         return redirect('/vlans/view/{}'.format(target.id))
+    else:
+        helpers.flash_errors(form.errors)
 
     return render_template('vlans_edit.html', data=data, vlan=target, form=form)
 
@@ -115,7 +120,7 @@ def subnets_add():
         else:
             target = Subnet(ip)
             form.populate_obj(target)
-
+            dbo.session.add(target)
             dbo.session.commit()
 
             flash("Added subnet {}".format(form.subnet.data), category='success')
@@ -131,11 +136,23 @@ def subnets_edit(subnetid):
     form = subnet.SubnetForm(obj=target)
 
     if form.validate_on_submit():
-        form.populate_obj(target)
-        dbo.session.commit()
-        flash("Edited subnet {}".format(form.subnet.data), category='success')
+        try:
+            ip = ipaddress.IPv4Network(form.subnet.data.decode())
+        except ipaddress.AddressValueError as e:
+            flash(u"Error in address: {}".format(e.message), category='danger')
+        except ipaddress.NetmaskValueError as e:
+            flash(u"Error in netmask: {}".format(e.message), category='danger')
+        except:
+            flash(u"Generic error", category='danger')
+        else:
+            target = Subnet(ip)
+            form.populate_obj(target)
+            dbo.session.add(target)
+            dbo.session.commit()
 
-        return redirect('/subnets')
+            flash("Edited subnet {}".format(form.subnet.data), category='success')
+
+        return redirect('/subnets/edit/{}'.format(subnetid))
 
     return render_template('subnets_edit.html', data=helpers.top_ten(), subnet=target, form=form)
 

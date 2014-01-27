@@ -16,16 +16,19 @@
                     </div>
                     <div class="form-group">
                         {{ form.subnets.label(for="subnet") }}
-                        {{ form.subnets(class="form-control") }}
+                        {{ form.subnets(class="form-control multi-select") }}
                     </div>
                     <div class="form-group">
                         {{ form.sites.label(for="site") }}
-                        {{ form.sites(class="form-control") }}
+                        {{ form.sites(class="form-control multi-select") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.impact.label(for="site") }}
+                        {{ form.impact(class="form-control") }}
                     </div>
                     <div class="checkbox">
-                        <label>
-                            {{ form.enhanced }} Enhanced
-                        </label>
+                        {{ form.enhanced.label }}
+                        {{ form.enhanced }}
                     </div>
                     <div class="checkbox">
                         {{ form.isactive.label(for="isactive") }}
