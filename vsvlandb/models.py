@@ -63,14 +63,16 @@ class Subnet(dbo.Model):
     cidr = dbo.Column(dbo.String(30))
     size = dbo.Column(dbo.Integer)
     isactive = dbo.Column(dbo.Boolean)
+    description = dbo.Column(dbo.String(50))
 
     sites = dbo.relationship('Site', secondary=subnet_sites, backref=dbo.backref('subnets', lazy='dynamic'))
 
-    def __init__(self, subnet, sites=[], isactive=True):
+    def __init__(self, subnet, sites=[], description=None, isactive=True):
         self.subnet = str(subnet)
         self.netmask = str(subnet.netmask)
         self.cidr = str(subnet.prefixlen)
         self.isactive = isactive
+        self.description = description
 
         self.sites = sites
 
