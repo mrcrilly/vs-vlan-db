@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}VS VLAN DB - View Impact{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+    <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Impact</h4>
+            </div>
+            <div class="panel-body">
+                <dl>
+                    <dt>Name</dt>
+                    <dd>{{impact.name}}</dd><br />
+                    <dt>Description</dt>
+                    <dd>{{impact.description or "None"}}</dd><br />
+                    <dt>Active</dt>
+                    <dd>{{impact.isactive}}</dd><br />
+                </dl>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Actions</h4>
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-pills nav-stacked">
+                    <li><a href="/impacts/edit/{{impact.id}}">
+                    <i class="fa fa-pencil fa-lg"></i> Edit</a></li>
+                    <li><a href="/impacts/delete/{{impact.id}}" class='text-danger'>
+                    <i class="fa fa-trash-o fa-lg"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                {% if impact.vlan|count >= 1 %}
+                    <h4 class="panel-title">VLANs</h4>
+                {% else %}
+                    <h4 class="panel-title">No VLANs Assigned</h4>
+                {% endif %}
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>VLAN</th>
+                            <th>Subnets</th>
+                            <th>Sites</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if impact.vlan|count >= 1 %}
+                        {% for vlan in impact.vlan %}
+                            <tr>
+                                <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
+                                <td>{{vlan.subnets|count}}</td>
+                                <td>{{vlan.sites|count}}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

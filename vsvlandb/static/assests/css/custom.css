@@ -1,0 +1,15 @@
+/*
+Overriding CHosen styling to make work with Bootstrap
+*/
+.chosen-container-multi .chosen-choices {
+	padding: 7px;
+}
+
+.chosen-container-multi .chosen-choices li.search-field input[type="text"] {
+	padding: 0px;
+}
+
+.chosen-container-multi .chosen-choices li.search-choice {
+  margin: 0px 0px 0px 5px;
+  padding: 1px 20px 1px 5px;
+}

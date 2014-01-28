@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}VS VLAN DB - Add Subnet{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Add New Subnet</h4>
+            </div>
+            <div class="panel-body">
+                <form role="form" action="/subnets/add" method="post" name="addsubnet">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.subnet.label(for="subnet") }}
+                        {{ form.subnet(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.description.label(for="subnet") }}
+                        {{ form.description(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.vlans.label(for="vlan") }}
+                        {{ form.vlans(class="form-control chosen-one")}}
+                    </div>
+                    <div class="form-group">
+                        {{ form.sites.label(for="site") }}
+                        {{ form.sites(class="form-control chosen-one") }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isactive.label }}
+                        {{ form.isactive }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        {% include "helpers/topten_side.html" %}
+    </div>
+</div>
+{% endblock %}

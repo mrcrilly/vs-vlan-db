@@ -1,0 +1,115 @@
+{% block topten_side %}
+<div class="panel-group">
+	<div class="panel panel-default">
+        <div class="panel-heading">
+        {% if data['vlans'] %}
+            <h4 class="panel-title">Latest Five VLANs</h4>
+        {% else %}
+            <h4 class="panel-title">No VLANs Created</h4>
+        {% endif %}
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>VLAN</th>
+                    <th>Description</th>
+                    <th>Subnet</th>
+                    <th>Enhanced</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if data['vlans'] %}
+                {% for vlan in data['vlans'][:5] %}
+                    <tr>
+                        <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.vlan}}</a></td>
+                        <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.description}}</a></td>
+                        <td>{{vlan.subnets|count}}</td>
+                        <td><a href="/vlans/edit/{{vlan.id}}">{{vlan.enhanced}}</a></td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td>N/D</td>
+                    <td>N/D</td>
+                    <td>N/D</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+        {% if data['subnets'] %}
+            <h4 class="panel-title">Latest Five Subnets</h4>
+        {% else %}
+            <h4 class="panel-title">No Subnets Created</h4>
+        {% endif %}
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Subnet</th>
+                    <th>Description</th>
+                    <th>Netmask</th>
+                    <th>CIDR</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if data['subnets'] %}
+                {% for subnet in data['subnets'][:5] %}
+                    <tr>
+                        <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.subnet}}</a></td>
+                        <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.description}}</a></td>
+                        <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.netmask}}</a></td>
+                        <td><a href="/subnets/edit/{{subnet.id}}">{{subnet.cidr}}</a></td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td>N/D</td>
+                    <td>N/D</td>
+                    <td>N/D</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+        {% if data['sites'] %}
+            <h4 class="panel-title">Latest Five Sites</h4>
+        {% else %}
+            <h4 class="panel-title">No Sites Created</h4>
+        {% endif %}
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Site</th>
+                    <th>Description</th>
+                    <th>VLANs</th>
+                    <th>Subnets</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if data['sites'] %}
+                {% for site in data['sites'][:5] %}
+                    <tr>
+                        <td><a href="/sites/edit/{{site.id}}">{{site.name}}</a></td>
+                        <td><a href="/sites/edit/{{site.id}}">{{site.description}}</a></td>
+                        <td><a href="/sites/edit/{{site.id}}">{{site.vlan|count}}</a></td>
+                        <td><a href="/sites/edit/{{site.id}}">{{site.subnet|count}}</a></td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td>N/D</td>
+                    <td>N/D</td>
+                    <td>N/D</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

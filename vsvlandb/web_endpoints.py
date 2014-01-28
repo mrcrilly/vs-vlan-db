@@ -1,9 +1,11 @@
 
 from vsvlandb import app, dbo, vlans, subnets, sites, impacts, helpers
-from vsvlandb.models import VLAN, Subnet, Site, Impact
+from vsvlandb.models import VLAN, Subnet, Site, Impact, vlan_subnets
 from vsvlandb.forms import vlan, subnet, site, impact
 
 from flask import redirect, request, render_template, url_for, flash
+
+from sqlalchemy.exc import IntegrityError
 
 import re
 import ipaddress
@@ -28,7 +30,7 @@ def vlans_list():
         'inactive': VLAN.query.filter_by(isactive=False).order_by(dbo.desc(VLAN.id))
     }
 
-    return render_template('vlans_list.html', vlans=data)
+    return render_template('vlans/vlans_list.html', vlans=data)
 
 @app.route('/vlans/add', methods=['GET', 'POST'])
 def vlans_add():
@@ -37,26 +39,42 @@ def vlans_add():
 
     if form.validate_on_submit():
         target = VLAN(form.vlan.data)
+        form.populate_obj(target)
 
-        if target:
-            form.populate_obj(target)
-            dbo.session.add(target)
+        existing = dbo.session.query(VLAN).filter(VLAN.vlan==target.vlan,
+                                                  VLAN.sites.any(Site.id.in_([i.id for i in target.sites])))
+        if existing:
+            clashes = existing.filter(VLAN.subnets.any(Subnet.id.in_([i.id for i in target.subnets])))
+            if clashes:
+                for v in clashes.all():
+                    flash("You are clashing with VLAN {0} ({1})".format(v.vlan, v.description or v.id),category='danger')
+                    dbo.session.rollback()
+
+                    return render_template('vlans/vlans_add.html', data=data, form=form)
+        
+        dbo.session.add(target)
+
+        try:
             dbo.session.commit()
-
+        except IntegrityError as e:
+            dbo.session.rollback()
+            flash("That VLAN already exists", category='danger')
+            return render_template('vlans/vlans_add.html', data=data, form=form)
+        else:
             flash("Added VLAN {}".format(target.vlan), category='success')
             return redirect('/vlans/view/{}'.format(target.id))
-        else:
-            flash("Problem adding VLAN {}".format(target.vlan), category='warning')
-            return render_template('vlans_add.html', data=data, form=form)
     else:
         helpers.flash_errors(form.errors)
 
-    return render_template('vlans_add.html', data=data, form=form)
+    for s in form.subnets:
+        s.label.data = "abc"
+
+    return render_template('vlans/vlans_add.html', data=data, form=form)
 
 @app.route('/vlans/view/<int:vlanid>')
 def vlans_view(vlanid):
     vlan = VLAN.query.filter_by(id=vlanid).first()
-    return render_template('vlans_view.html', vlan=vlan)
+    return render_template('vlans/vlans_view.html', vlan=vlan)
 
 @app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_edit(vlanid):
@@ -71,14 +89,25 @@ def vlans_edit(vlanid):
 
     if form.validate_on_submit():
         form.populate_obj(target)
-        dbo.session.commit()
 
+        existing = dbo.session.query(VLAN).filter(VLAN.id != target.id,
+                                                  VLAN.vlan==target.vlan,
+                                                  VLAN.sites.any(Site.id.in_([i.id for i in target.sites])))
+        if existing:
+            clashes = existing.filter(VLAN.subnets.any(Subnet.id.in_([i.id for i in target.subnets])))
+            if clashes:
+                for v in clashes.all():
+                    flash("You are clashing with VLAN {0} ({1})".format(v.vlan, v.description or v.id),category='danger')
+                    dbo.session.rollback()
+                    return redirect('/vlans/edit/{}'.format(target.id))
+
+        dbo.session.commit()
         flash("Updated VLAN {}".format(target.vlan), category='success')
         return redirect('/vlans/view/{}'.format(target.id))
     else:
         helpers.flash_errors(form.errors)
 
-    return render_template('vlans_edit.html', data=data, vlan=target, form=form)
+    return render_template('vlans/vlans_edit.html', data=data, vlan=target, form=form)
 
 @app.route('/vlans/delete/<int:vlanid>', methods=['GET', 'POST'])
 def vlans_delete(vlanid):
@@ -100,12 +129,12 @@ def subnets_list():
         'inactive': Subnet.query.filter_by(isactive=False).order_by(dbo.desc(Subnet.id)),
     }
 
-    return render_template('subnets_list.html', subnets=lists)
+    return render_template('subnets/subnets_list.html', subnets=lists)
 
 @app.route('/subnets/view/<int:subnetid>')
 def subnets_view(subnetid):
     target = Subnet.query.filter_by(id=subnetid).first()
-    return render_template('subnets_view.html', subnet=target)
+    return render_template('subnets/subnets_view.html', subnet=target)
 
 @app.route('/subnets/add', methods=['GET', 'POST'])
 def subnets_add():
@@ -120,15 +149,22 @@ def subnets_add():
         else:
             target = Subnet(ip)
             form.populate_obj(target)
-            dbo.session.add(target)
-            dbo.session.commit()
+
+            try:
+                dbo.session.add(target)
+                dbo.session.commit()
+            except IntegrityError as e:
+                flash("That subnet already exists", category='danger')
+                dbo.session.rollback()
+
+                return render_template('subnets/subnets_add.html', data=data, form=form)
 
             flash("Added subnet {}".format(form.subnet.data), category='success')
             return redirect('/subnets/add')
 
-        return render_template('subnets_add.html', data=data, form=form)
+        return render_template('subnets/subnets_add.html', data=data, form=form)
 
-    return render_template('subnets_add.html', data=data, form=form)
+    return render_template('subnets/subnets_add.html', data=data, form=form)
 
 @app.route('/subnets/edit/<int:subnetid>', methods=['GET', 'POST'])
 def subnets_edit(subnetid):
@@ -154,7 +190,7 @@ def subnets_edit(subnetid):
 
         return redirect('/subnets/edit/{}'.format(subnetid))
 
-    return render_template('subnets_edit.html', data=helpers.top_ten(), subnet=target, form=form)
+    return render_template('subnets/subnets_edit.html', data=helpers.top_ten(), subnet=target, form=form)
 
 @app.route('/subnets/delete/<int:subnetid>')
 def subnets_delete(subnetid):
@@ -178,24 +214,36 @@ def sites_list():
         'inactive': Site.query.filter_by(isactive=False).order_by(dbo.desc(Site.id)),
     }
 
-    return render_template('sites_list.html', sites=lists)
+    return render_template('sites/sites_list.html', sites=lists)
 
 @app.route('/sites/view/<int:siteid>')
 def sites_view(siteid):
     target = Site.query.filter_by(id=siteid).first()
-    return render_template('sites_view.html', site=target)
+    return render_template('sites/sites_view.html', site=target)
 
 @app.route('/sites/add', methods=['GET', 'POST'])
 def sites_add():
     form = site.SiteForm()
 
     if form.validate_on_submit():
-        sites.add(form)
+        target = Site(name=form.name.data)
+        form.populate_obj(target)
+    
+        try:
+            dbo.session.add(target)
+            dbo.session.commit()
+        except IntegrityError as e:
+            flash("That site already exists", category='danger')
+            dbo.session.rollback()
+
+            return render_template('sites/sites_add.html', data=helpers.top_ten(), form=form)
+
         return redirect('/sites')
+
     else:
         helpers.flash_errors(form.errors)
 
-    return render_template('sites_add.html', data=helpers.top_ten(), form=form)
+    return render_template('sites/sites_add.html', data=helpers.top_ten(), form=form)
 
 @app.route('/sites/edit/<int:siteid>', methods=['GET', 'POST'])
 def sites_edit(siteid):
@@ -214,7 +262,7 @@ def sites_edit(siteid):
     form.description.data = target.description
     form.isactive.data = target.isactive
     
-    return render_template('sites_edit.html', site=target, data=data, form=form)
+    return render_template('sites/sites_edit.html', site=target, data=data, form=form)
 
 @app.route('/sites/delete/<int:siteid>', methods=['GET', 'POST'])
 def sites_delete(siteid):
@@ -232,7 +280,7 @@ def impacts_list():
         'inactive': Impact.query.filter_by(isactive=False).order_by(dbo.desc(Impact.id))
     }
 
-    return render_template('impacts_list.html', impacts=data)
+    return render_template('impacts/impacts_list.html', impacts=data)
 
 @app.route('/impacts/add', methods=['GET', 'POST'])
 def impacts_add():
@@ -244,12 +292,12 @@ def impacts_add():
     else:
         helpers.flash_errors(form.errors)
 
-    return render_template('impacts_add.html', data=helpers.top_ten(), form=form)
+    return render_template('impacts/impacts_add.html', data=helpers.top_ten(), form=form)
 
 @app.route('/impacts/view/<int:impactid>')
 def impacts_view(impactid):
     impact = Impact.query.filter_by(id=impactid).first()
-    return render_template('impacts_view.html', impact=impact)
+    return render_template('impacts/impacts_view.html', impact=impact)
 
 @app.route('/impacts/edit/<int:impactid>', methods=['GET', 'POST'])
 def impacts_edit(impactid):
@@ -267,7 +315,7 @@ def impacts_edit(impactid):
     form.description.data = target.description
     form.isactive.data = target.isactive
     
-    return render_template('impacts_edit.html', impact=target, data=helpers.top_ten(), form=form)
+    return render_template('impacts/impacts_edit.html', impact=target, data=helpers.top_ten(), form=form)
 
 @app.route('/impacts/delete/<int:impactid>', methods=['GET', 'POST'])
 def impacts_delete(impactid):

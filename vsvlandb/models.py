@@ -35,9 +35,11 @@ class VLAN(dbo.Model):
     impact_id = dbo.Column(dbo.Integer, dbo.ForeignKey('impact.id'))
     impact = dbo.relationship('Impact', backref=dbo.backref('vlan', order_by=id))
 
+    description = dbo.Column(dbo.String(50))
+
     added = dbo.Column(dbo.DateTime)
 
-    def __init__(self, vlan, subnets=[], sites=[], impact=None, enhanced=False, isactive=True):
+    def __init__(self, vlan, subnets=[], sites=[], impact=None, enhanced=False, isactive=True, description=None):
         self.vlan = vlan
         self.enhanced = enhanced
         self.isactive = isactive
@@ -48,8 +50,13 @@ class VLAN(dbo.Model):
 
         self.added = datetime.datetime.now()
 
+        self.description = description
+
     def __repr__(self):
         return '<VLAN {}>'.format(self.vlan)
+
+    def __str__(self):
+        return '{0} ({1})'.format(self.vlan, self.description or "")
 
 class Subnet(dbo.Model):
     id = dbo.Column(dbo.Integer, primary_key=True)
@@ -59,24 +66,29 @@ class Subnet(dbo.Model):
     cidr = dbo.Column(dbo.String(30))
     size = dbo.Column(dbo.Integer)
     isactive = dbo.Column(dbo.Boolean)
+    description = dbo.Column(dbo.String(50))
 
     sites = dbo.relationship('Site', secondary=subnet_sites, backref=dbo.backref('subnets', lazy='dynamic'))
 
-    def __init__(self, subnet, sites=[], isactive=True):
+    def __init__(self, subnet, description=None, sites=[], isactive=True):
         self.subnet = str(subnet)
         self.netmask = str(subnet.netmask)
         self.cidr = str(subnet.prefixlen)
         self.isactive = isactive
+        self.description = description
 
         self.sites = sites
 
     def __repr__(self):
         return '<Subnet {0}/{1}>'.format(self.subnet, self.netmask)
 
+    def __str__(self):
+        return '{0} ({1})'.format(self.subnet, self.description or self.netmask)
+
 class Site(dbo.Model):
     id = dbo.Column(dbo.Integer, primary_key=True)
 
-    name = dbo.Column(dbo.String, unique=True)
+    name = dbo.Column(dbo.String(30), unique=True)
     description = dbo.Column(dbo.String(30))
     isactive = dbo.Column(dbo.Boolean)
 
@@ -86,11 +98,14 @@ class Site(dbo.Model):
         self.description = description
 
     def __repr__(self):
-        return '<Site {0} ({1})>'.format(self.name, self.isactive)
+        return '<Site {0} {1}>'.format(self.name, self.isactive)
+
+    def __str__(self):
+        return '{0} ({1})'.format(self.name, self.description)
         
 class Impact(dbo.Model):
     id = dbo.Column(dbo.Integer, primary_key=True)
-    name = dbo.Column(dbo.String, unique=True)
+    name = dbo.Column(dbo.String(30), unique=True)
     description = dbo.Column(dbo.String(30))
     isactive = dbo.Column(dbo.Boolean)
 
@@ -101,3 +116,7 @@ class Impact(dbo.Model):
 
     def __repr__(self):
         return '<Impact Level {0} ({1})>'.format(self.name, self.isactive)
+
+    def __str__(self):
+        return '{0} ({1})'.format(self.name, self.description)
+

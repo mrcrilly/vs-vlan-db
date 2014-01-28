@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}VS VLAN DB - Add Site{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Add New Site</h4>
+            </div>
+            <div class="panel-body">
+                <form role="form" action="/sites/add" method="post" name="addsite">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.name.label(for="site") }}
+                        {{ form.name(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.description.label(for="site") }}
+                        {{ form.description(class="form-control") }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isactive.label }}
+                        {{ form.isactive }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        {% include "helpers/topten_side.html" %}
+    </div>
+</div>
+{% endblock %}
