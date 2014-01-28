@@ -21,9 +21,9 @@
         <div class="panel panel-default">
           <div class="panel-heading">
           {% if vlans.all()|count >= 1 %}
-              20 Latest VLANs
+              <h4 class="panel-title">20 Latest VLANs</h4>
           {% else %}
-              No VLANs available
+              <h4 class="panel-title">No VLANs available</h4>
          {% endif %}
           </div>
           <table class="table table-striped table-hover">
@@ -64,9 +64,9 @@
         <div class="panel panel-default">
           <div class="panel-heading">
           {% if subnets.all()|count >= 1 %}
-              20 Latest Subnets
+              <h4 class="panel-title">20 Latest Subnets</h4>
           {% else %}
-              No subnets available
+              <h4 class="panel-title">No subnets available</h4>
          {% endif %}
           </div>
           <table class="table table-striped table-hover">

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}VS VLAN DB - Add VLAN{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-lg-4">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+                <h4 class="panel-title">Add New VLAN</h4>
+			</div>
+			<div class="panel-body">
+                <form role="form" action="/vlans/add" method="post" name="addvlan">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.vlan.label(for="vlan") }}
+                        {{ form.vlan(class="form-control") }}
+                    </div>
+                    <div class="class-group">
+                        {{ form.description.label(for="description") }}
+                        {{ form.description(class="form-control") }}
+                    </div><br/>
+                    <div class="form-group">
+                        {{ form.subnets.label(for="subnets") }}
+                        {{ form.subnets(class="form-control input-sm chosen-one") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.sites.label(for="sites") }}
+                        {{ form.sites(class="form-control chosen-one") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.impact.label(for="impact") }}
+                        {{ form.impact(class="form-control") }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.enhanced.label }}
+                        {{ form.enhanced }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isactive.label }}
+                        {{ form.isactive }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Create</button>
+                </form>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-8">
+        {% include "helpers/topten_side.html" %}
+	</div>
+</div>
+{% endblock %}

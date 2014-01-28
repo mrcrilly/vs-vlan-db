@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}VS VLAN DB - Edit VLAN{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-lg-4">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">Edit VLAN</h4>
+			</div>
+			<div class="panel-body">
+                <form role="form" action="/vlans/edit/{{vlan.id}}" method="post" name="editvlan">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.vlan.label(for="vlanid") }}
+                        {{ form.vlan(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.subnets.label(for="subnet") }}
+                        {{ form.subnets(class="form-control chosen-one") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.sites.label(for="site") }}
+                        {{ form.sites(class="form-control chosen-one") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.impact.label(for="site") }}
+                        {{ form.impact(class="form-control") }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.enhanced.label }}
+                        {{ form.enhanced }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isactive.label(for="isactive") }}
+                        {{ form.isactive }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Edit</button>
+                    <a href="/vlans/delete/{{vlan.id}}" class="btn btn-danger" role="button">Delete</a>
+                </form>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-8">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                {% if vlan.subnets|count >= 1 %}
+                    <h4 class="panel-title">Subnets</h4>
+                {% else %}
+                    <h4 class="panel-title">No Subnets Assigned</h4>
+                {% endif %}
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Subnet</th>
+                            <th>Netmask</th>
+                            <th>Active</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if vlan.subnets|count >= 1 %}
+                        {% for subnet in vlan.subnets %}
+                            <tr>
+                                <td><a href="/subnets/view/{{subnet.id}}">{{subnet.subnet}}</a></td>
+                                <td><a href="/subnets/view/{{subnet.id}}">{{subnet.netmask}}</a></td>
+                                <td><a href="/subnets/view/{{subnet.id}}">{{subnet.isactive}}</a></td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                {% if vlan.sites|count >= 1 %}
+                    <h4 class="panel-title">Sites</h4>
+                {% else %}
+                    <h4 class="panel-title">No Sites Assigned</h4>
+                {% endif %}
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Subnets</th>
+                            <th>VLANs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if vlan.sites|count >= 1 %}
+                        {% for site in vlan.sites %}
+                            <tr>
+                                <td><a href="/sites/view/{{site.id}}">{{site.name}}</a></td>
+                                <td>{{site.subnets.all()|count}}</td>
+                                <td>{{site.vlans.all()|count}}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                            <td>N/D</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
