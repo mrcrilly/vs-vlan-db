@@ -40,10 +40,10 @@
 							<thead>
 								<tr>
 									<th>Subnet</th>
+                                    <th>Description</th>
 									<th>Netmask</th>
 									<th>Sites</th>
 									<th>VLANs</th>
-									<th>Active</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -51,6 +51,7 @@
     							{% for subnet in subnets['active'].all() %}
     								<tr class="clickable-row" href="/subnets/view/{{subnet.id}}">
     									<td><a href="/subnets/view/{{subnet.id}}">{{subnet.subnet}}</a></td>
+                                        <td><a href="/subnets/view/{{subnet.id}}">{{subnet.description}}</a></td>
                                         <td><a href="/subnets/view/{{subnet.id}}">{{subnet.netmask}}</a></td>
                                         <td>{{subnet.sites|count}}</td>
                                         <td>{{subnet.vlans.all()|count}}</td>

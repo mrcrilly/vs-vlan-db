@@ -21,4 +21,5 @@ class SubnetForm(Form):
     vlans = QuerySelectMultipleField(query_factory=active_vlans)
     sites = QuerySelectMultipleField(query_factory=active_sites)
 
+    description = StringField(u'Description')
     isactive = BooleanField(u'Active')
