@@ -6,7 +6,7 @@ Exactly what it says on the tin: it's a very simple VLAN database for keeping tr
 
 This application is currently very fragile. It's likely that you can break it if you try hard enough. Please keep this in mind if you begin to use this application in production.
 
-It'a also worth noting that it has not been configured to work with anything but a SQLite(3) database, so again, it's fragile.
+It's also worth noting that it has not been configured or tested to work with anything but a SQLite(3) database, so again, it's fragile.
 
 ## Installation
 
@@ -29,6 +29,8 @@ A lot is missing right now, but at present you can:
 1. Add sites, such as data centres or geographical locations ("London", "Paris", etc) to organise things a bit;
 1. Add subnets which can then be added to VLANs;
 1. Add VLANs, which can be given a subnet (or set of) or a single/set of sites
+1. Implement impacts that are, essentially a marker for how critical the VLAN is.
 
-As such the organisation of these elements is more in the DB and in the form of statistics until I write some views to display more detailed information.
+The relationships between these items is quite loose. For example, you can implement duplicate VLANs, Subnets, Sites, etc. This is to give you flexibility as you might want to organise your informatio in a manner I can't predict, so instead I simply won't force restrictions on you.
+
 
