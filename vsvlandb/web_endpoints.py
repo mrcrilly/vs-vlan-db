@@ -39,34 +39,30 @@ def vlans_add():
 
     if form.validate_on_submit():
         target = VLAN(form.vlan.data)
+        form.populate_obj(target)
 
-        if target:
-            form.populate_obj(target)
+        existing = dbo.session.query(VLAN).filter(VLAN.vlan==target.vlan,
+                                                  VLAN.sites.any(Site.id.in_([i.id for i in target.sites])))
+        if existing:
+            clashes = existing.filter(VLAN.subnets.any(Subnet.id.in_([i.id for i in target.subnets])))
+            if clashes:
+                for v in clashes.all():
+                    flash("You are clashing with VLAN {0} ({1})".format(v.vlan, v.description or v.id),category='danger')
+                    dbo.session.rollback()
 
-            existing = VLAN.query.filter_by(vlan=target.vlan).all()
-            if existing:
-                for v in existing:
-                    for i in target.subnets:
-                        for j in v.subnets:
-                            if i == j:
-                                flash("New VLAN has a subnet clash with existing VLAN: {0} == {1}".format(i, j), category='danger')
-                                dbo.session.rollback()
-                                return render_template('vlans_add.html', data=data, form=form)  
+                    return render_template('vlans/vlans_add.html', data=data, form=form)
+        
+        dbo.session.add(target)
 
-            dbo.session.add(target)
-
-            try:
-                dbo.session.commit()
-            except IntegrityError as e:
-                dbo.session.rollback()
-                flash("That VLAN already exists", category='danger')
-                return render_template('vlans/vlans_add.html', data=data, form=form)
-
+        try:
+            dbo.session.commit()
+        except IntegrityError as e:
+            dbo.session.rollback()
+            flash("That VLAN already exists", category='danger')
+            return render_template('vlans/vlans_add.html', data=data, form=form)
+        else:
             flash("Added VLAN {}".format(target.vlan), category='success')
             return redirect('/vlans/view/{}'.format(target.id))
-        else:
-            flash("Problem adding VLAN {}".format(target.vlan), category='warning')
-            return render_template('vlans/vlans_add.html', data=data, form=form)
     else:
         helpers.flash_errors(form.errors)
 
@@ -91,22 +87,16 @@ def vlans_edit(vlanid):
     if form.validate_on_submit():
         form.populate_obj(target)
 
-        existing = VLAN.query.filter(VLAN.id != target.id, VLAN.vlan==target.vlan).all()
+        existing = dbo.session.query(VLAN).filter(VLAN.id != target.id,
+                                                  VLAN.vlan==target.vlan,
+                                                  VLAN.sites.any(Site.id.in_([i.id for i in target.sites])))
         if existing:
-            for e_vlan in existing:
-                # Check if the VLAN we're looking at here has the same site...
-                for e_site in e_vlan.sites:
-                    for t_site in target.sites:
-                        if e_site == t_site:
-                            print "Found: {}".format(e_vlan.id)
-                            for t_subnet in target.subnets:
-                                for e_subnet in e_vlan.subnets:
-                                    if t_subnet == e_subnet:
-                                        flash("VLAN has a subnet clash with existing VLAN: {0} {1}".format(e_vlan.vlan,
-                                                                                                           e_vlan.description or e_vlan.id),
-                                                                                                           category='danger')
-                                        dbo.session.rollback()
-                                        return redirect('/vlans/edit/{}'.format(target.id))
+            clashes = existing.filter(VLAN.subnets.any(Subnet.id.in_([i.id for i in target.subnets])))
+            if clashes:
+                for v in clashes.all():
+                    flash("You are clashing with VLAN {0} ({1})".format(v.vlan, v.description or v.id),category='danger')
+                    dbo.session.rollback()
+                    return redirect('/vlans/edit/{}'.format(target.id))
 
         dbo.session.commit()
         flash("Updated VLAN {}".format(target.vlan), category='success')
