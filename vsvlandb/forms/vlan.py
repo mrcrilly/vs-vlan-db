@@ -21,10 +21,10 @@ class VlanForm(Form):
     vlan = IntegerField(u'VLAN', validators=[NumberRange(min=1,max=4096), DataRequired()])
 
     # Optional:
-    subnets = QuerySelectMultipleField(get_label='subnet', query_factory=active_subnets)
-    sites = QuerySelectMultipleField(get_label='name', query_factory=active_sites)
+    subnets = QuerySelectMultipleField(query_factory=active_subnets)
+    sites = QuerySelectMultipleField(query_factory=active_sites)
 
-    impact = QuerySelectField(get_label='name', query_factory=active_impacts, validators=[Optional()])
+    impact = QuerySelectField(query_factory=active_impacts, validators=[Optional()])
 
     description = TextField(u'Description', validators=[Length(min=0, max=50)])
 

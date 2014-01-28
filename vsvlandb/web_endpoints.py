@@ -66,6 +66,9 @@ def vlans_add():
     else:
         helpers.flash_errors(form.errors)
 
+    for s in form.subnets:
+        s.label.data = "abc"
+
     return render_template('vlans/vlans_add.html', data=data, form=form)
 
 @app.route('/vlans/view/<int:vlanid>')

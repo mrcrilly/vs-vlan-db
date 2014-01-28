@@ -55,6 +55,9 @@ class VLAN(dbo.Model):
     def __repr__(self):
         return '<VLAN {}>'.format(self.vlan)
 
+    def __str__(self):
+        return '{0} ({1})'.format(self.vlan, self.description or "")
+
 class Subnet(dbo.Model):
     id = dbo.Column(dbo.Integer, primary_key=True)
 
@@ -67,7 +70,7 @@ class Subnet(dbo.Model):
 
     sites = dbo.relationship('Site', secondary=subnet_sites, backref=dbo.backref('subnets', lazy='dynamic'))
 
-    def __init__(self, subnet, sites=[], description=None, isactive=True):
+    def __init__(self, subnet, description=None, sites=[], isactive=True):
         self.subnet = str(subnet)
         self.netmask = str(subnet.netmask)
         self.cidr = str(subnet.prefixlen)
@@ -78,6 +81,9 @@ class Subnet(dbo.Model):
 
     def __repr__(self):
         return '<Subnet {0}/{1}>'.format(self.subnet, self.netmask)
+
+    def __str__(self):
+        return '{0} ({1})'.format(self.subnet, self.description or self.netmask)
 
 class Site(dbo.Model):
     id = dbo.Column(dbo.Integer, primary_key=True)
@@ -92,7 +98,10 @@ class Site(dbo.Model):
         self.description = description
 
     def __repr__(self):
-        return '<Site {0} ({1})>'.format(self.name, self.isactive)
+        return '<Site {0} {1}>'.format(self.name, self.isactive)
+
+    def __str__(self):
+        return '{0} ({1})'.format(self.name, self.description)
         
 class Impact(dbo.Model):
     id = dbo.Column(dbo.Integer, primary_key=True)
@@ -107,3 +116,7 @@ class Impact(dbo.Model):
 
     def __repr__(self):
         return '<Impact Level {0} ({1})>'.format(self.name, self.isactive)
+
+    def __str__(self):
+        return '{0} ({1})'.format(self.name, self.description)
+
