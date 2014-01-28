@@ -82,7 +82,7 @@ class Subnet(dbo.Model):
 class Site(dbo.Model):
     id = dbo.Column(dbo.Integer, primary_key=True)
 
-    name = dbo.Column(dbo.String, unique=True)
+    name = dbo.Column(dbo.String(30), unique=True)
     description = dbo.Column(dbo.String(30))
     isactive = dbo.Column(dbo.Boolean)
 
@@ -96,7 +96,7 @@ class Site(dbo.Model):
         
 class Impact(dbo.Model):
     id = dbo.Column(dbo.Integer, primary_key=True)
-    name = dbo.Column(dbo.String, unique=True)
+    name = dbo.Column(dbo.String(30), unique=True)
     description = dbo.Column(dbo.String(30))
     isactive = dbo.Column(dbo.Boolean)
 

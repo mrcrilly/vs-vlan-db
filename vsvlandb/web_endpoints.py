@@ -45,8 +45,8 @@ def vlans_add():
 
             existing = VLAN.query.filter_by(vlan=target.vlan).all()
             if existing:
-                for i in target.subnets:
-                    for v in existing:
+                for v in existing:
+                    for i in target.subnets:
                         for j in v.subnets:
                             if i == j:
                                 flash("New VLAN has a subnet clash with existing VLAN: {0} == {1}".format(i, j), category='danger')
@@ -91,16 +91,26 @@ def vlans_edit(vlanid):
     if form.validate_on_submit():
         form.populate_obj(target)
 
-        existing = VLAN.query.filter_by(vlan=target.vlan).all()
+        existing = VLAN.query.filter(VLAN.id != target.id, VLAN.vlan==target.vlan).all()
         if existing:
-            for i in target.subnets:
-                for v in existing:
-                    for j in v.subnets:
-                        if i == j:
-                            flash("VLAN has a subnet clash with existing VLAN: {0} {1}".format(v.vlan, v.description), category='danger')
-                            dbo.session.rollback()
-                            return redirect('/vlans/view/{}'.format(target.id))
+            for e_vlan in existing:
+                # Check if the VLAN we're looking at here has the same site...
+                for e_site in e_vlan.sites:
+                    for t_site in target.sites:
+                        if e_site == t_site:
+                            print "Found: {}".format(e_vlan.id)
+                            for t_subnet in target.subnets:
+                                for e_subnet in e_vlan.subnets:
+                                    if t_subnet == e_subnet:
+                                        flash("VLAN has a subnet clash with existing VLAN: {0} {1}".format(e_vlan.vlan,
+                                                                                                           e_vlan.description or e_vlan.id),
+                                                                                                           category='danger')
+                                        dbo.session.rollback()
+                                        return redirect('/vlans/edit/{}'.format(target.id))
 
+        dbo.session.commit()
+        flash("Updated VLAN {}".format(target.vlan), category='success')
+        return redirect('/vlans/view/{}'.format(target.id))
     else:
         helpers.flash_errors(form.errors)
 
