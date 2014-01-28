@@ -3,7 +3,8 @@ jQuery(document).ready(function($) {
         window.document.location = $(this).attr("href");
     });
 
-    $(".multi-select").multiSelect();
+    // $(".multi-select").multiSelect();
+    $(".chosen-one").chosen();
 
     $("#search").on("keyup", function() {
         var value = $(this).val();

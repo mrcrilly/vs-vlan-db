@@ -5,7 +5,7 @@
     <div class="col-lg-4">
     <div class="panel panel-default">
             <div class="panel-heading">
-                Impact
+                <h4 class="panel-title">Impact</h4>
             </div>
             <div class="panel-body">
                 <dl>
@@ -20,7 +20,7 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-heading">
-                Actions
+                <h4 class="panel-title">Actions</h4>
             </div>
             <div class="panel-body">
                 <ul class="nav nav-pills nav-stacked">
@@ -36,10 +36,10 @@
         <div class="panel-group">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                {% if impact.vlans.all()|count >= 1 %}
-                    VLANs
+                {% if impact.vlan|count >= 1 %}
+                    <h4 class="panel-title">VLANs</h4>
                 {% else %}
-                    No VLANs Assigned
+                    <h4 class="panel-title">No VLANs Assigned</h4>
                 {% endif %}
                 </div>
                 <table class="table table-striped">
@@ -51,8 +51,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% if impact.vlans.all()|count >= 1 %}
-                        {% for vlan in impact.vlans.all() %}
+                    {% if impact.vlan|count >= 1 %}
+                        {% for vlan in impact.vlan %}
                             <tr>
                                 <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
                                 <td>{{vlan.subnets|count}}</td>

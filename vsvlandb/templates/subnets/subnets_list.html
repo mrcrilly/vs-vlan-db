@@ -2,7 +2,7 @@
 {% block title %}VS VLAN DB - Sites{% endblock %}
 {% block content %}
 <div class="row">
-    <div class="col-lg-3">
+    <div class="col-lg-4">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">Subnets</h4>
@@ -15,16 +15,16 @@
             </div>
         </div>
     </div>
-	<div class="col-lg-9">
+	<div class="col-lg-8">
 		<div class="panel-group" id="accordion">
 			<div class="panel panel-default">
 				<div class="panel-heading">
     				<h4 class="panel-title">
     					<a href="#activetable" data-toggle="collapse" data-parent="#accordion">
     					{% if subnets['active'].all()|count >= 1 %}
-                            Active Subnet
+                            <h4 class="panel-title">Active Subnet</h4>
                         {% else %}
-                            No Active Subnets
+                            <h4 class="panel-title">No Active Subnets</h4>
                         {% endif %}
     					</a>
     				</h4>
@@ -77,9 +77,9 @@
 						<h4 class="panel-title">
 							<a href="#inactivetable" data-toggle="collapse" data-parent="#accordion">
 								{% if subnets['inactive'].all()|count >= 1 %}
-                                    Inactive Subnet
+                                    <h4 class="panel-title">Inactive Subnet</h4>
                                 {% else %}
-                                    No Inactive Subnets
+                                    <h4 class="panel-title">No Inactive Subnets</h4>
                                 {% endif %}
 							</a>
 						</h4>

@@ -2,12 +2,12 @@
 {% block title %}VS VLAN DB - Add Impact{% endblock %}
 {% block content %}
 <div class="row">
-	<div class="col-lg-4">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-					Add New Impact
-			</div>
-			<div class="panel-body">
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Add New Impact</h4>
+            </div>
+            <div class="panel-body">
                 <form role="form" action="/impacts/add" method="post" name="addimpact">
                     {{ form.hidden_tag() }}
                     <div class="form-group">
@@ -24,11 +24,11 @@
                     </div>
                     <button type="submit" class="btn btn-success">Create</button>
                 </form>
-			</div>
-		</div>
-	</div>
-	<div class="col-lg-8">
-        {% include "topten_side.html" %}
-	</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        {% include "helpers/topten_side.html" %}
+    </div>
 </div>
 {% endblock %}

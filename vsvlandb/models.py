@@ -35,9 +35,11 @@ class VLAN(dbo.Model):
     impact_id = dbo.Column(dbo.Integer, dbo.ForeignKey('impact.id'))
     impact = dbo.relationship('Impact', backref=dbo.backref('vlan', order_by=id))
 
+    description = dbo.Column(dbo.String(50))
+
     added = dbo.Column(dbo.DateTime)
 
-    def __init__(self, vlan, subnets=[], sites=[], impact=None, enhanced=False, isactive=True):
+    def __init__(self, vlan, subnets=[], sites=[], impact=None, enhanced=False, isactive=True, description=None):
         self.vlan = vlan
         self.enhanced = enhanced
         self.isactive = isactive
@@ -47,6 +49,8 @@ class VLAN(dbo.Model):
         self.impact = impact
 
         self.added = datetime.datetime.now()
+
+        self.description = description
 
     def __repr__(self):
         return '<VLAN {}>'.format(self.vlan)
@@ -59,14 +63,16 @@ class Subnet(dbo.Model):
     cidr = dbo.Column(dbo.String(30))
     size = dbo.Column(dbo.Integer)
     isactive = dbo.Column(dbo.Boolean)
+    description = dbo.Column(dbo.String(50))
 
     sites = dbo.relationship('Site', secondary=subnet_sites, backref=dbo.backref('subnets', lazy='dynamic'))
 
-    def __init__(self, subnet, sites=[], isactive=True):
+    def __init__(self, subnet, sites=[], description=None, isactive=True):
         self.subnet = str(subnet)
         self.netmask = str(subnet.netmask)
         self.cidr = str(subnet.prefixlen)
         self.isactive = isactive
+        self.description = description
 
         self.sites = sites
 

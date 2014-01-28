@@ -2,7 +2,7 @@
 {% block title %}VS VLAN DB - Impacts{% endblock %}
 {% block content %}
 <div class="row">
-    <div class="col-lg-3">
+    <div class="col-lg-4">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">Impacts</h4>
@@ -15,33 +15,33 @@
             </div>
         </div>
     </div>
-	<div class="col-lg-9">
-		
-		<div class="panel-group" id="accordion">
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4 class="panel-title">
-						<a href="#activetable" data-toggle="collapse" data-parent="#accordion">
-							{% if impacts['active'].all()|count >= 1 %}
-                            Active Impacts
-                        {% else %}
-                            No Active Impacts
-                        {% endif %}
-						</a>
-					</h4>
-				</div>
-				<div class="panel-collapse collapse in" id="activetable">
-					<div class="panel-body">
-						<table class="table table-striped">
-							<thead>
-								<tr>
+  <div class="col-lg-8">
+    
+    <div class="panel-group" id="accordion">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a href="#activetable" data-toggle="collapse" data-parent="#accordion">
+              {% if impacts['active'].all()|count >= 1 %}
+                  Active Impacts
+              {% else %}
+                  No Active Impacts
+              {% endif %}
+            </a>
+          </h4>
+        </div>
+        <div class="panel-collapse collapse in" id="activetable">
+          <div class="panel-body">
+            <table class="table table-striped">
+              <thead>
+                <tr>
                   <th>Impact</th>
                   <th>Description</th>
                   <th>Active</th>
                 </tr>
-							</thead>
-							<tbody>
-							{% if impacts['active'].all()|count >= 1 %}
+              </thead>
+              <tbody>
+              {% if impacts['active'].all()|count >= 1 %}
                   {% for impact in impacts['active'].all() %}
                       <tr>
                           <td><a href="/impacts/view/{{impact.id}}">{{impact.name}}</a></td>
@@ -56,28 +56,28 @@
                      <td>N/D</td>
                  </tr>
               {% endif %}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-			<div class="panel panel-default">
-				<div class="panel-heading">
-						<h4 class="panel-title">
-							<a href="#inactivetable" data-toggle="collapse" data-parent="#accordion">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+              <a href="#inactivetable" data-toggle="collapse" data-parent="#accordion">
               {% if impacts['inactive'].all()|count >= 1 %}
                   Inactive Impacts
               {% else %}
                   No Inactive Impacts
               {% endif %}
-							</a>
-						</h4>
-				</div>
-				<div class="panel-collapse collapse" id="inactivetable">
-					<div class="panel-body">
-						<table class="table table-striped">
-							<thead>
+              </a>
+            </h4>
+        </div>
+        <div class="panel-collapse collapse" id="inactivetable">
+          <div class="panel-body">
+            <table class="table table-striped">
+              <thead>
                 <tr>
                   <th>Impact</th>
                   <th>Description</th>
@@ -101,12 +101,12 @@
                  </tr>
               {% endif %}
               </tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</div>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
 
-	</div>
+  </div>
 </div>
 {% endblock %}

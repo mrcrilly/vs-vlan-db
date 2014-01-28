@@ -1,36 +1,32 @@
 {% extends "base.html" %}
-{% block title %}VS VLAN DB - View VLAN{% endblock %}
+{% block title %}VS VLAN DB - View Subnet{% endblock %}
 {% block content %}
 <div class="row">
     <div class="col-lg-4">
-    <div class="panel panel-default">
+        <div class="panel panel-default">
             <div class="panel-heading">
-                VLAN
+                <h4 class="panel-title">Subnet</h4>
             </div>
             <div class="panel-body">
                 <dl>
-                    <dt>VLAN ID</dt>
-                    <dd>{{vlan.vlan}}</dd><br />
-                    <dt>Enhanced</dt>
-                    <dd>{{vlan.enhanced}}</dd><br />
-                    <dt>Active</dt>
-                    <dd>{{vlan.isactive}}</dd><br />
-                    <dt>Impact</dt>
-                    <dd>{{vlan.impact.name}}</dd><br />
-                    <dt>Added</dt>
-                    <dd>{{vlan.added.date()}}</dd>
+                    <dt>Subnet</dt>
+                    <dd>{{subnet.subnet}}</dd><br />
+                    <dt>Netmask</dt>
+                    <dd>{{subnet.netmask}}</dd><br />
+                    <dt>CIDR</dt>
+                    <dd>{{subnet.cidr}}</dd>
                 </dl>
             </div>
         </div>
         <div class="panel panel-default">
             <div class="panel-heading">
-                Actions
+                <h4 class="panel-title">Actions</h4>
             </div>
             <div class="panel-body">
                 <ul class="nav nav-pills nav-stacked">
-                    <li><a href="/vlans/edit/{{vlan.id}}">
+                    <li><a href="/subnets/edit/{{subnet.id}}">
                     <i class="fa fa-pencil fa-lg"></i> Edit</a></li>
-                    <li><a href="/vlans/delete/{{vlan.id}}" class='text-danger'>
+                    <li><a href="/subnets/delete/{{subnet.id}}" class='text-danger'>
                     <i class="fa fa-trash-o fa-lg"></i> Delete</a></li>
                 </ul>
             </div>
@@ -40,31 +36,34 @@
         <div class="panel-group">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                {% if vlan.subnets|count >= 1 %}
-                    Subnets
+                {% if subnet.vlans.all()|count >= 1 %}
+                    <h4 class="panel-title">VLANs</h4>
                 {% else %}
-                    No Subnets Assigned
+                    <h4 class="panel-title">No VLANs Assigned</h4>
                 {% endif %}
                 </div>
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Subnet</th>
-                            <th>Netmask</th>
+                            <th>VLAN</th>
+                            <th>Subnets</th>
+                            <th>Sites</th>
                             <th>Active</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% if vlan.subnets|count >= 1 %}
-                        {% for subnet in vlan.subnets %}
+                    {% if subnet.vlans.all()|count >= 1 %}
+                        {% for vlan in subnet.vlans.all() %}
                             <tr>
-                                <td><a href="/subnets/view/{{subnet.id}}">{{subnet.subnet}}</a></td>
-                                <td><a href="/subnets/view/{{subnet.id}}">{{subnet.netmask}}</a></td>
-                                <td><a href="/subnets/view/{{subnet.id}}">{{subnet.isactive}}</a></td>
+                                <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
+                                <td>{{vlan.subnets|count}}</td>
+                                <td>{{vlan.sites|count}}</td>
+                                <td>{{vlan.isactive}}</td>
                             </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
+                            <td>N/D</td>
                             <td>N/D</td>
                             <td>N/D</td>
                             <td>N/D</td>
@@ -75,10 +74,10 @@
             </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
-                {% if vlan.sites|count >= 1 %}
-                    Sites
+                {% if subnet.sites|count >= 1 %}
+                    <h4 class="panel-title">Sites</h4>
                 {% else %}
-                    No Sites Assigned
+                    <h4 class="panel-title">No Sites Assigned</h4>
                 {% endif %}
                 </div>
                 <table class="table table-striped">
@@ -90,8 +89,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% if vlan.sites|count >= 1 %}
-                        {% for site in vlan.sites %}
+                    {% if subnet.sites|count >= 1 %}
+                        {% for site in subnet.sites %}
                             <tr>
                                 <td><a href="/sites/view/{{site.id}}">{{site.name}}</a></td>
                                 <td>{{site.subnets.all()|count}}</td>

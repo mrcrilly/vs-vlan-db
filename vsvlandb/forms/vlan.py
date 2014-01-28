@@ -3,7 +3,7 @@ from vsvlandb.models import Site, Subnet, Impact
 from flask.ext.wtf import Form
 
 from wtforms import TextField, SelectField, BooleanField, IntegerField
-from wtforms.validators import DataRequired, NumberRange, Optional
+from wtforms.validators import DataRequired, NumberRange, Optional, Length
 
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 
@@ -24,8 +24,9 @@ class VlanForm(Form):
     subnets = QuerySelectMultipleField(get_label='subnet', query_factory=active_subnets)
     sites = QuerySelectMultipleField(get_label='name', query_factory=active_sites)
 
-    impact = QuerySelectField(get_label='name', query_factory=active_impacts)
-    # impact = SelectField(u'Impact', choices=active_impacts(), coerce=int, validators=[Optional()])
+    impact = QuerySelectField(get_label='name', query_factory=active_impacts, validators=[Optional()])
+
+    description = TextField(u'Description', validators=[Length(min=0, max=50)])
 
     isactive = BooleanField(u'Active', default=True)
     enhanced = BooleanField(u'Enhanced')

@@ -5,7 +5,7 @@
 	<div class="col-lg-4">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-					Add New VLAN
+                <h4 class="panel-title">Add New VLAN</h4>
 			</div>
 			<div class="panel-body">
                 <form role="form" action="/vlans/add" method="post" name="addvlan">
@@ -14,13 +14,17 @@
                         {{ form.vlan.label(for="vlan") }}
                         {{ form.vlan(class="form-control") }}
                     </div>
+                    <div class="class-group">
+                        {{ form.description.label(for="description") }}
+                        {{ form.description(class="form-control") }}
+                    </div><br/>
                     <div class="form-group">
                         {{ form.subnets.label(for="subnets") }}
-                        {{ form.subnets(class="form-control multi-select") }}
+                        {{ form.subnets(class="form-control input-sm chosen-one") }}
                     </div>
                     <div class="form-group">
                         {{ form.sites.label(for="sites") }}
-                        {{ form.sites(class="form-control multi-select") }}
+                        {{ form.sites(class="form-control chosen-one") }}
                     </div>
                     <div class="form-group">
                         {{ form.impact.label(for="impact") }}
@@ -40,7 +44,7 @@
 		</div>
 	</div>
 	<div class="col-lg-8">
-        {% include "topten_side.html" %}
+        {% include "helpers/topten_side.html" %}
 	</div>
 </div>
 {% endblock %}

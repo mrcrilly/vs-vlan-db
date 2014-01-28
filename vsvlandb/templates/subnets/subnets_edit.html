@@ -1,45 +1,41 @@
 {% extends "base.html" %}
-{% block title %}VS VLAN DB - View Subnet{% endblock %}
+{% block title %}VS VLAN DB - Edit Subnet{% endblock %}
 {% block content %}
 <div class="row">
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Subnet
-            </div>
-            <div class="panel-body">
-                <dl>
-                    <dt>Subnet</dt>
-                    <dd>{{subnet.subnet}}</dd><br />
-                    <dt>Netmask</dt>
-                    <dd>{{subnet.netmask}}</dd><br />
-                    <dt>CIDR</dt>
-                    <dd>{{subnet.cidr}}</dd>
-                </dl>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Actions
-            </div>
-            <div class="panel-body">
-                <ul class="nav nav-pills nav-stacked">
-                    <li><a href="/subnets/edit/{{subnet.id}}">
-                    <i class="fa fa-pencil fa-lg"></i> Edit</a></li>
-                    <li><a href="/subnets/delete/{{subnet.id}}" class='text-danger'>
-                    <i class="fa fa-trash-o fa-lg"></i> Delete</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-8">
-        <div class="panel-group">
+	<div class="col-lg-4">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">Edit Subnet</h4>
+			</div>
+			<div class="panel-body">
+				<form role="form" action="/subnets/edit/{{subnet.id}}" method="post" name="editsubnet">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.subnet.label(for="subnet") }}
+                        {{ form.subnet(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.sites.label(for="sites") }}
+                        {{ form.sites(class="form-control chosen-one") }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isactive.label(for="isactive") }}
+                        {{ form.isactive }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Edit</button>
+                    <a href="/subnets/delete/{{subnet.id}}" class="btn btn-danger" role="button">Delete</a>
+                </form>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-8">
+	     <div class="panel-group">
             <div class="panel panel-default">
                 <div class="panel-heading">
                 {% if subnet.vlans.all()|count >= 1 %}
-                    VLANs
+                    <h4 class="panel-title">VLANs</h4>
                 {% else %}
-                    No VLANs Assigned
+                    <h4 class="panel-title">No VLANs Assigned</h4>
                 {% endif %}
                 </div>
                 <table class="table table-striped">
@@ -75,9 +71,9 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                 {% if subnet.sites|count >= 1 %}
-                    Sites
+                    <h4 class="panel-title">Sites</h4>
                 {% else %}
-                    No Sites Assigned
+                    <h4 class="panel-title">No Sites Assigned</h4>
                 {% endif %}
                 </div>
                 <table class="table table-striped">
@@ -108,6 +104,6 @@
                 </table>
             </div>
         </div>
-    </div>
+	</div>
 </div>
 {% endblock %}
