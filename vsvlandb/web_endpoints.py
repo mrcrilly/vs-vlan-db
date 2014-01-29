@@ -91,16 +91,17 @@ def vlans_edit(vlanid):
     if form.validate_on_submit():
         form.populate_obj(target)
 
-        existing = dbo.session.query(VLAN).filter(VLAN.id != target.id,
-                                                  VLAN.vlan==target.vlan,
-                                                  VLAN.sites.any(Site.id.in_([i.id for i in target.sites])))
-        if existing:
-            clashes = existing.filter(VLAN.subnets.any(Subnet.id.in_([i.id for i in target.subnets])))
-            if clashes:
-                for v in clashes.all():
-                    flash("You are clashing with VLAN {0} ({1})".format(v.vlan, v.description or v.id),category='danger')
-                    dbo.session.rollback()
-                    return redirect('/vlans/edit/{}'.format(target.id))
+        if target.subnets:
+            existing = dbo.session.query(VLAN).filter(VLAN.id != target.id,
+                                                      VLAN.vlan==target.vlan,
+                                                      VLAN.sites.any(Site.id.in_([i.id for i in target.sites])))
+            if existing:
+                clashes = existing.filter(VLAN.subnets.any(Subnet.id.in_([i.id for i in target.subnets])))
+                if clashes:
+                    for v in clashes.all():
+                        flash("You are clashing with VLAN {0} ({1})".format(v.vlan, v.description or v.id),category='danger')
+                        dbo.session.rollback()
+                        return redirect('/vlans/edit/{}'.format(target.id))
 
         dbo.session.commit()
         flash("Updated VLAN {}".format(target.vlan), category='success')
@@ -150,6 +151,16 @@ def subnets_add():
         else:
             target = Subnet(ip)
             form.populate_obj(target)
+
+            if form.vlans.data:
+                clashes = dbo.session.query(VLAN).filter(VLAN.sites.any(Site.id.in_(target.vlans)))
+
+                print clashes
+
+                if clashes.all():
+                    flash("Two or more of the VLANs selected are in the same site, so they cannot share the same subnet", category='danger')
+                    dbo.session.rollback()
+                    return render_template('subnets/subnets_add.html', data=data, form=form)
 
             try:
                 dbo.session.add(target)
