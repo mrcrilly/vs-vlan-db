@@ -41,16 +41,17 @@ def vlans_add():
         target = VLAN(form.vlan.data)
         form.populate_obj(target)
 
-        existing = dbo.session.query(VLAN).filter(VLAN.vlan==target.vlan,
-                                                  VLAN.sites.any(Site.id.in_([i.id for i in target.sites])))
-        if existing:
-            clashes = existing.filter(VLAN.subnets.any(Subnet.id.in_([i.id for i in target.subnets])))
-            if clashes:
-                for v in clashes.all():
-                    flash("You are clashing with VLAN {0} ({1})".format(v.vlan, v.description or v.id),category='danger')
-                    dbo.session.rollback()
+        if target.subnets:
+            existing = dbo.session.query(VLAN).filter(VLAN.vlan==target.vlan,
+                                                      VLAN.sites.any(Site.id.in_([i.id for i in target.sites])))
+            if existing:
+                clashes = existing.filter(VLAN.subnets.any(Subnet.id.in_([i.id for i in target.subnets])))
+                if clashes:
+                    for v in clashes.all():
+                        flash("You are clashing with VLAN {0} ({1})".format(v.vlan, v.description or v.id),category='danger')
+                        dbo.session.rollback()
 
-                    return render_template('vlans/vlans_add.html', data=data, form=form)
+                        return render_template('vlans/vlans_add.html', data=data, form=form)
         
         dbo.session.add(target)
 
