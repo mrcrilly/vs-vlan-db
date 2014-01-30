@@ -1,5 +1,5 @@
 
-from vsvlandb import dbo
+from vsvlandb import dbo, hsh
 
 import ipaddress
 import datetime
@@ -121,7 +121,33 @@ class Impact(dbo.Model):
         return '{0} ({1})'.format(self.name, self.description)
 
 class User(dbo.Model):
-    pass
+    id = dbo.Column(dbo.Integer, primary_key=True)
 
+    email = dbo.Column(dbo.String(100), unique=True)
+    name = dbo.Column(dbo.String(100))
+    password = dbo.Column(dbo.String(100))
+    isactive = dbo.Column(dbo.Boolean)
+    isadmin = dbo.Column(dbo.Boolean)
 
+    added = dbo.Column(dbo.DateTime)
+
+    def __init__(self, email, name=None, password=None, isactive=False, isadmin=False, added=datetime.datetime.now()):
+        self.email = email
+        self.name = name
+        
+        if password:
+            self.password = hsh.generate_password_hash(password)
+            self.isactive = isactive
+        else:
+            self.password = None
+            self.isactive = False
+
+        self.isadmin = isadmin
+        self.added = added
+
+    def __repr__(self):
+        return '<User {}>'.format(self.email)
+
+    def __str__(self):
+        return '{0} ({1})'.format(self.name, self.email)
 

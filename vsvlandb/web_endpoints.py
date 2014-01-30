@@ -1,16 +1,13 @@
 
-from vsvlandb import app, dbo, vlans, subnets, sites, impacts, helpers
-from vsvlandb.models import VLAN, Subnet, Site, Impact, vlan_subnets
-from vsvlandb.forms import vlan, subnet, site, impact
+from vsvlandb import app, dbo, vlans, subnets, sites, impacts, helpers, hsh
+from vsvlandb.models import VLAN, Subnet, Site, Impact, User
+from vsvlandb.forms import vlan, subnet, site, impact, user
 
 from flask import redirect, request, render_template, url_for, flash
 
 from sqlalchemy.exc import IntegrityError
 
-import re
 import ipaddress
-import sys
-import inspect
 
 from datetime import datetime
 from sets import Set
@@ -22,6 +19,10 @@ def index():
     subn_data = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id)).limit(20)
 
     return render_template('index.html', vlans=vlan_data, subnets=subn_data)
+
+@app.route('/login')
+def login():
+    pass
 
 # VLANS
 @app.route('/vlans')
