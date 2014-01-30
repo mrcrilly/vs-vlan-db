@@ -153,9 +153,9 @@ def subnets_add():
             form.populate_obj(target)
 
             if form.vlans.data:
-                clashes = dbo.session.query(VLAN).filter(VLAN.sites.any(Site.id.in_(target.vlans)))
+                clashes = target.vlans.filter(VLAN.sites.any(VLAN.id.in_([i.id for i in target.vlans])))
 
-                print clashes
+                print clashes.count()
 
                 if clashes.all():
                     flash("Two or more of the VLANs selected are in the same site, so they cannot share the same subnet", category='danger')
@@ -193,9 +193,7 @@ def subnets_edit(subnetid):
         except:
             flash(u"Generic error", category='danger')
         else:
-            target = Subnet(ip)
             form.populate_obj(target)
-            dbo.session.add(target)
             dbo.session.commit()
 
             flash("Edited subnet {}".format(form.subnet.data), category='success')
