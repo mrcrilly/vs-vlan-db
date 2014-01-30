@@ -13,6 +13,7 @@ import sys
 import inspect
 
 from datetime import datetime
+from sets import Set
 
 # Root/Index
 @app.route('/')
@@ -67,9 +68,6 @@ def vlans_add():
     else:
         helpers.flash_errors(form.errors)
 
-    for s in form.subnets:
-        s.label.data = "abc"
-
     return render_template('vlans/vlans_add.html', data=data, form=form)
 
 @app.route('/vlans/view/<int:vlanid>')
@@ -91,16 +89,22 @@ def vlans_edit(vlanid):
     if form.validate_on_submit():
         form.populate_obj(target)
 
-        existing = dbo.session.query(VLAN).filter(VLAN.id != target.id,
-                                                  VLAN.vlan==target.vlan,
-                                                  VLAN.sites.any(Site.id.in_([i.id for i in target.sites])))
-        if existing:
-            clashes = existing.filter(VLAN.subnets.any(Subnet.id.in_([i.id for i in target.subnets])))
-            if clashes:
-                for v in clashes.all():
-                    flash("You are clashing with VLAN {0} ({1})".format(v.vlan, v.description or v.id),category='danger')
-                    dbo.session.rollback()
-                    return redirect('/vlans/edit/{}'.format(target.id))
+        if not dbo.session.is_modified(target):
+            flash("No changes to VLAN {}".format(target.vlan), category='warning')
+            dbo.session.rollback()
+            return redirect('/vlans/edit/{}'.format(target.id))
+
+        if target.subnets:
+            existing = dbo.session.query(VLAN).filter(VLAN.id != target.id,
+                                                      VLAN.vlan==target.vlan,
+                                                      VLAN.sites.any(Site.id.in_([i.id for i in target.sites])))
+            if existing:
+                clashes = existing.filter(VLAN.subnets.any(Subnet.id.in_([i.id for i in target.subnets])))
+                if clashes:
+                    for v in clashes.all():
+                        flash("You are clashing with VLAN {0} ({1})".format(v.vlan, v.description or v.id),category='danger')
+                        dbo.session.rollback()
+                        return redirect('/vlans/edit/{}'.format(target.id))
 
         dbo.session.commit()
         flash("Updated VLAN {}".format(target.vlan), category='success')
@@ -146,10 +150,31 @@ def subnets_add():
         try:
             ip = ipaddress.IPv4Network(form.subnet.data.decode())
         except ipaddress.AddressValueError as e:
-            flash("Error: {}".format(e.message), category='danger')
+            flash("Address Error: {}".format(e.message), category='danger')
+        except ipaddress.NetmaskValueError as e:
+            flash("Netmask Error: {}".format(e.message), category='danger')
+        except ValueError as e:
+            flash("Error in subnet: {}".format(e.message), category='danger')
         else:
             target = Subnet(ip)
             form.populate_obj(target)
+
+            # Sadly, I am unable to determine how-to do this in SQL due a
+            # weak understanding of SQL on my part and thus, I cannot utilise
+            # SQLAlchemy's query language here. The result in this for-loop
+            # craziness
+            if target.vlans.count>=1:
+                for v in target.vlans.all():
+                    for j in target.vlans.all():
+                        if v.id == j.id:
+                            continue
+
+                        if v.vlan == j.vlan:
+                            site_clashes = Set([x.id for x in v.sites]) & Set([y.id for y in j.sites])
+                            if len(site_clashes)>=1:
+                                flash("VLAN site clash between {0} vs {1}".format(v.vlan,j.vlan), category='danger')
+                                dbo.session.rollback()
+                                return render_template('subnets/subnets_add.html', data=data, form=form)
 
             try:
                 dbo.session.add(target)
@@ -157,11 +182,10 @@ def subnets_add():
             except IntegrityError as e:
                 flash("That subnet already exists", category='danger')
                 dbo.session.rollback()
-
                 return render_template('subnets/subnets_add.html', data=data, form=form)
 
             flash("Added subnet {}".format(form.subnet.data), category='success')
-            return redirect('/subnets/add')
+            return redirect('/subnets/view/{}'.format(target.id))
 
         return render_template('subnets/subnets_add.html', data=data, form=form)
 
@@ -182,12 +206,24 @@ def subnets_edit(subnetid):
         except:
             flash(u"Generic error", category='danger')
         else:
-            target = Subnet(ip)
             form.populate_obj(target)
-            dbo.session.add(target)
-            dbo.session.commit()
 
+            if form.vlans.data:
+                for v in form.vlans.data:
+                    for j in form.vlans.data:
+                        if v.id == j.id:
+                            continue
+
+                        if v.vlan == j.vlan:
+                            site_clashes = Set([x.id for x in v.sites]) & Set([y.id for y in j.sites])
+                            if len(site_clashes)>=1:
+                                flash("VLAN site clash between {0} vs {1}".format(v.vlan,j.vlan), category='danger')
+                                dbo.session.rollback()
+                                return render_template('subnets/subnets_edit.html', data=helpers.top_ten(), subnet=target, form=form)
+
+            dbo.session.commit()
             flash("Edited subnet {}".format(form.subnet.data), category='success')
+            return redirect('/subnets/view/{}'.format(target.id))
 
         return redirect('/subnets/edit/{}'.format(subnetid))
 
