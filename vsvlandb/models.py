@@ -120,3 +120,8 @@ class Impact(dbo.Model):
     def __str__(self):
         return '{0} ({1})'.format(self.name, self.description)
 
+class User(dbo.Model):
+    pass
+
+
+
