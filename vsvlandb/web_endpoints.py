@@ -369,3 +369,7 @@ def impacts_edit(impactid):
 def impacts_delete(impactid):
     impacts.delete_id(impactid)
     return redirect('/vlans')
+
+@app.route('/reports')
+def reports_view():
+    return render_template('reports/reports_view.html')
