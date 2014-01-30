@@ -147,6 +147,11 @@ def subnets_add():
     data = helpers.top_ten()
 
     if form.validate_on_submit():
+        if dbo.session.query(Subnet).filter(Subnet.subnet==form.subnet.data,
+                                            Subnet.sites.any(Site.id.in_([i.id for i in form.sites.data]))).all():
+            flash("That subnet already exists", category='danger')
+            return render_template('subnets/subnets_add.html', data=data, form=form)
+
         try:
             ip = ipaddress.IPv4Network(form.subnet.data.decode())
         except ipaddress.AddressValueError as e:
@@ -197,6 +202,12 @@ def subnets_edit(subnetid):
     form = subnet.SubnetForm(obj=target)
 
     if form.validate_on_submit():
+        if dbo.session.query(Subnet).filter(Subnet.subnet==form.subnet.data,
+                                            Subnet.id!=subnetid,
+                                            Subnet.sites.any(Site.id.in_([i.id for i in form.sites.data]))).all():
+            flash("That subnet already exists", category='danger')
+            return render_template('subnets/subnets_edit.html', data=helpers.top_ten(), subnet=target, form=form)
+
         try:
             ip = ipaddress.IPv4Network(form.subnet.data.decode())
         except ipaddress.AddressValueError as e:
