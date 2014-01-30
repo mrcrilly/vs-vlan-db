@@ -44,7 +44,7 @@
                                     <th>Description</th>
                                     <th>Subnets</th>
                                     <th>Sites</th>
-                                    <th>Enhanced</th>
+                                    <th>Stretched</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -55,7 +55,7 @@
                                         <td><a href="/vlans/view/{{vlan.id}}">{{vlan.description}}</a></td>
                                         <td>{{vlan.subnets|count}}</td>
                                         <td>{{vlan.sites|count}}</td>
-                                        <td><a href="/vlans/view/{{vlan.id}}">{{vlan.enhanced}}</a></td>
+                                        <td><a href="/vlans/view/{{vlan.id}}">{{vlan.stretched}}</a></td>
                                     </tr>
                                 {% endfor %}
                                 {% else %}
@@ -94,7 +94,7 @@
                                     <th>Description</th>
                                     <th>Subnets</th>
                                     <th>Sites</th>
-                                    <th>Enhanced</th>
+                                    <th>Stretched</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -105,7 +105,7 @@
                                         <td><a href="/vlans/view/{{vlan.id}}">{{vlan.description}}</a></td>
                                         <td>{{vlan.subnets|count}}</td>
                                         <td>{{vlan.sites|count}}</td>
-                                        <td><a href="/vlans/view/{{vlan.id}}">{{vlan.enhanced}}</a></td>
+                                        <td><a href="/vlans/view/{{vlan.id}}">{{vlan.stretched}}</a></td>
                                     </tr>
                                     {% endfor %}
                                 {% else %}

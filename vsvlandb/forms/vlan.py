@@ -29,4 +29,4 @@ class VlanForm(Form):
     description = TextField(u'Description', validators=[Length(min=0, max=50)])
 
     isactive = BooleanField(u'Active', default=True)
-    enhanced = BooleanField(u'Enhanced')
+    stretched = BooleanField(u'Stretched')

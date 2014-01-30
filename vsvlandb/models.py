@@ -24,7 +24,7 @@ class VLAN(dbo.Model):
     id = dbo.Column(dbo.Integer, primary_key=True)
 
     vlan = dbo.Column(dbo.String(5))
-    enhanced = dbo.Column(dbo.Boolean)
+    stretched = dbo.Column(dbo.Boolean)
     impact = dbo.Column(dbo.String(5))
     isactive = dbo.Column(dbo.Boolean)
 
@@ -39,9 +39,9 @@ class VLAN(dbo.Model):
 
     added = dbo.Column(dbo.DateTime)
 
-    def __init__(self, vlan, subnets=[], sites=[], impact=None, enhanced=False, isactive=True, description=None):
+    def __init__(self, vlan, subnets=[], sites=[], impact=None, stretched=False, isactive=True, description=None):
         self.vlan = vlan
-        self.enhanced = enhanced
+        self.stretched = stretched
         self.isactive = isactive
 
         self.subnets = subnets
