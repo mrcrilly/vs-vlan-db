@@ -15,6 +15,8 @@ import inspect
 from datetime import datetime
 from sets import Set
 
+from random import shuffle, randint
+
 # Root/Index
 @app.route('/')
 def index():
@@ -372,4 +374,10 @@ def impacts_delete(impactid):
 
 @app.route('/reports')
 def reports_view():
-    return render_template('reports/reports_view.html')
+    data = []
+    data.append({'name': 'London', 'data': [i*randint(1,10) for i in range(50)]})
+    data.append({'name': 'New York', 'data': [i*randint(1,10) for i in range(50)]})
+    data.append({'name': 'Paris', 'data': [i*randint(1,10) for i in range(50)]})
+
+
+    return render_template('reports/reports_view.html', data=data)
