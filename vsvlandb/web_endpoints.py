@@ -22,7 +22,12 @@ def index():
 
 @app.route('/login')
 def login():
-    pass
+    form = user.UserForm_Login()
+
+    if form.validate_on_submit():
+        pass
+
+    return render_template('users/login.html', form=form)
 
 # VLANS
 @app.route('/vlans')

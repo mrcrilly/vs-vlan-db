@@ -126,10 +126,14 @@ class User(dbo.Model):
     email = dbo.Column(dbo.String(100), unique=True)
     name = dbo.Column(dbo.String(100))
     password = dbo.Column(dbo.String(100))
+
     isactive = dbo.Column(dbo.Boolean)
     isadmin = dbo.Column(dbo.Boolean)
+    isreadonly=  dbo.Column(dbo.Boolean)
+    canapi = dbo.Column(dbo.Boolean)
 
     added = dbo.Column(dbo.DateTime)
+    lastlogin = dbo.Column(dbo.DateTime)
 
     def __init__(self, email, name=None, password=None, isactive=False, isadmin=False, added=datetime.datetime.now()):
         self.email = email
