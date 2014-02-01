@@ -21,7 +21,6 @@ class ApiVLANs(restful.Resource):
 
 class ApiSubnets(restful.Resource):
 
-
     def get(self):
         pass
 
