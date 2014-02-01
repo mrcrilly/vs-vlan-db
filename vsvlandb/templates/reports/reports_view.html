@@ -14,27 +14,50 @@
         $(function () { 
             $('#vlans_site').highcharts({
                 chart: {
-                    type: 'line'
+                    type: 'column'
                 },
                 title: {
-                    text: 'VLANs per Site'
+                    text: {{chart['dates']|safe}}
                 },
                 xAxis: {
-                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                    categories: {{chart['sites']|safe}}
                 },
                 yAxis: {
+                    min: 0,
                     title: {
-                        text: 'VLANs'
+                        text: 'Total Subnets/VLANs'
+                    },
+                    stackLabels: {
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                        }
                     }
                 },
                 legend: {
-                    layout: 'vertical',
                     align: 'right',
-                    verticalAlign: 'middle',
-                    borderWidth: 0
+                    x: -70,
+                    verticalAlign: 'top',
+                    y: 20,
+                    floating: true,
+                    backgroundColor: 'white',
+                    borderColor: '#CCC',
+                    borderWidth: 1,
+                    shadow: false
                 },
-                series: {{data|safe}}
+                tooltip: {
+                    formatter: function() {
+                        return '<b>'+ this.x +'</b><br/>'+this.series.name +': '+ this.y +'<br/>'+
+                               'Total: '+ this.point.stackTotal;
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        stacking: 'normal'
+                    }
+                }
+                series: {{chart['data']|safe}}
             });
         });
     </script>

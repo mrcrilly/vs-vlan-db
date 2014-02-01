@@ -3,21 +3,8 @@
 {% block content %}
 <div class="row">
 	<div class="col-lg-6">
-		<div class="dashboard-element">
-			<h2 class="text-center">VLANS</h2>
-			<p class="text-center text-success"><a href="/vlans">{{vlans.all()|count}}</a></p>
-		</div>
-	</div>
-	<div class="col-lg-6">
-		<div class="dashboard-element">
-			<h2 class="text-center">Subnets</h2>
-			<p class="text-center text-success"><a href="/subnets">{{subnets.all()|count}}</a></p>
-		</div>
-	</div>
-</div>
-<br />
-<div class="row">
-	<div class="col-lg-6">
+        <h2 class="text-center">VLANs</h2>
+        <div id="vlans"></div>
         <div class="panel panel-default">
           <div class="panel-heading">
           {% if vlans.all()|count >= 1 %}
@@ -38,7 +25,7 @@
               </thead>
               <tbody>
               {% if vlans.all()|count >= 1 %}
-                  {% for vlan in vlans.all() %}
+                  {% for vlan in vlans.filter_by(isactive=True).all()[:20] %}
                   <tr>
                       <td><a href="/vlans/view/{{vlan.id}}">{{vlan.vlan}}</a></td>
                       <td>{{vlan.subnets|count}}</td>
@@ -61,6 +48,8 @@
         </div>
 	</div>
     <div class="col-lg-6">
+        <h2 class="text-center">Subnets</h2>
+        <div id="subnets"></div>
         <div class="panel panel-default">
           <div class="panel-heading">
           {% if subnets.all()|count >= 1 %}
@@ -79,7 +68,7 @@
               </thead>
               <tbody>
               {% if subnets.all()|count >= 1 %}
-                  {% for subnet in subnets.all() %}
+                  {% for subnet in subnets.filter_by(isactive=True).all()[:20] %}
                   <tr>
                       <td><a href="/subnets/view/{{subnet.id}}">{{subnet.subnet}}</a></td>
                       <td>{{subnet.vlans.all()|count}}</td>
@@ -98,4 +87,100 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block javascript %}
+<script src="{{url_for('static', filename='assests/js/highcharts.js')}}"></script>
+
+<script type="text/javascript">
+    $(function () {
+
+        $('#vlans').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: 0,
+                plotShadow: false,
+                margin: [-60, 0, -100, 0],
+                height: 100,
+            },
+            credits: {
+                enabled: false
+            },
+            title: {
+                text: null
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    dataLabels: {
+                        enabled: true,
+                        distance: -35,
+                        style: {
+                            fontWeight: 'bold',
+                            color: 'white',
+                            textShadow: '0px 1px 2px black'
+                        }
+                    },
+                    startAngle: -90,
+                    endAngle: 90,
+                    center: ['50%', '75%']
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'VLAN State',
+                innerSize: '50%',
+                data: [
+                    ['Active', {{vlans.filter_by(isactive=True).all()|count}}],
+                    ['Inactive', {{vlans.filter_by(isactive=False).all()|count}}]
+                ]
+            }]
+        });
+
+        $('#subnets').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: 0,
+                plotShadow: false,
+                margin: [-60, 0, -100, 0],
+                height: 100,
+            },
+            credits: {
+                enabled: false
+            },
+            title: {
+                text: null
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    dataLabels: {
+                        enabled: true,
+                        distance: -35,
+                        style: {
+                            fontWeight: 'bold',
+                            color: 'white',
+                            textShadow: '0px 1px 2px black'
+                        }
+                    },
+                    startAngle: -90,
+                    endAngle: 90,
+                    center: ['50%', '75%']
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Subnet State',
+                innerSize: '50%',
+                data: [
+                    ['Active', {{subnets.filter_by(isactive=True).all()|count}}],
+                    ['Inactive', {{subnets.filter_by(isactive=False).all()|count}}]
+                ]
+            }]
+        });
+    });
+</script>
 {% endblock %}

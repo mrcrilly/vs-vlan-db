@@ -20,8 +20,8 @@ from random import shuffle, randint
 # Root/Index
 @app.route('/')
 def index():
-    vlan_data = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id)).limit(20)
-    subn_data = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id)).limit(20)
+    vlan_data = VLAN.query.order_by(dbo.desc(VLAN.id))
+    subn_data = Subnet.query.order_by(dbo.desc(Subnet.id))
 
     return render_template('index.html', vlans=vlan_data, subnets=subn_data)
 
@@ -364,7 +364,7 @@ def impacts_edit(impactid):
     form.name.data = target.name
     form.description.data = target.description
     form.isactive.data = target.isactive
-    
+
     return render_template('impacts/impacts_edit.html', impact=target, data=helpers.top_ten(), form=form)
 
 @app.route('/impacts/delete/<int:impactid>', methods=['GET', 'POST'])
@@ -374,10 +374,11 @@ def impacts_delete(impactid):
 
 @app.route('/reports')
 def reports_view():
-    data = []
-    data.append({'name': 'London', 'data': [i*randint(1,10) for i in range(50)]})
-    data.append({'name': 'New York', 'data': [i*randint(1,10) for i in range(50)]})
-    data.append({'name': 'Paris', 'data': [i*randint(1,10) for i in range(50)]})
-
+    chart = {
+        'data': [],
+        'sites': [s.name for s in Site.query.filter_by(isactive=true)]
+    }
 
     return render_template('reports/reports_view.html', data=data)
+
+
