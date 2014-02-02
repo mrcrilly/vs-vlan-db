@@ -135,7 +135,7 @@ class User(dbo.Model):
     added = dbo.Column(dbo.DateTime)
     lastlogin = dbo.Column(dbo.DateTime)
 
-    def __init__(self, email, name=None, password=None, isactive=False, isadmin=False, added=datetime.datetime.now()):
+    def __init__(self, email, password, name=None, isactive=False, isadmin=False, added=datetime.datetime.now()):
         self.email = email
         self.name = name
         
@@ -148,6 +148,21 @@ class User(dbo.Model):
 
         self.isadmin = isadmin
         self.added = added
+
+    def valid_password(self, password):
+        return hsh.check_password_hash(self.password, password)
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return self.isactive
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode(self.id)
 
     def __repr__(self):
         return '<User {}>'.format(self.email)

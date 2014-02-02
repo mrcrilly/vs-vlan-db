@@ -11,12 +11,14 @@
 
     <title>{%block title%}{%endblock%}</title>
 
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="{{url_for('static', filename='assests/css/font-awesome.css')}}" rel="stylesheet">
 
     <!-- Bootstrap core CSS -->
     <link href="{{url_for('static', filename='assests/css/bootstrap.min.css')}}" rel="stylesheet">
     <link href="{{url_for('static', filename='assests/css/chosen.min.css')}}" rel="stylesheet">
     <link href="{{url_for('static', filename='assests/css/custom.css')}}" rel="stylesheet">
+
+    {% block css %}{% endblock %}
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -29,7 +31,7 @@
 
     <style type="text/css">
       body {
-        padding-top: 100px;
+        padding-top: 0px;
       }
 
       .dashboard-element {
@@ -46,7 +48,7 @@
 
   <body>
 
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="navbar navbar-inverse" role="navigation">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -55,24 +57,32 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">VS VLAN DB</a>
+          <a class="navbar-brand" href="/">VS VLAN DB</a>
         </div>
+        {% block navigation %}
         <div class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
+        <ul class="nav navbar-nav">
+            {% if current_user.is_authenticated() %}
             <li><a href="/">Dashboard</a></li>
             <li><a href="/vlans">VLANs</a></li>
             <li><a href="/subnets">Subnets</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 Tagging <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu">
-                <li><a href="/sites">Sites</a></li>
-                <li><a href="/impacts">Impacts</a></li>
-              </ul>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="/sites">Sites</a></li>
+                    <li><a href="/impacts">Impacts</a></li>
+                </ul>
             </li>
-          </ul>
+            <li><a href="/reports">Reports</a></li>
+            <li><a href="/logout">Logout</a></li>
+            {% else %}
+            <li><a href="/login">Login</a></li>
+            {% endif %}
+        </ul>
         </div><!--/.nav-collapse -->
+        {% endblock %}
       </div>
     </div>
 
@@ -87,13 +97,13 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-
+    <script src="{{url_for('static', filename='assests/js/jquery-1.10.2.min.js')}}"></script>
     <script src="{{url_for('static', filename='assests/js/bootstrap.min.js')}}"></script>
     <script src="{{url_for('static', filename='assests/js/chosen.jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='assests/js/custom.js')}}"></script>
 
     <script type="text/javascript">(function(e,d,b){var a=0;var f=null;var c={x:0,y:0};e("[data-toggle]").closest("li").on("mouseenter",function(g){if(f){f.removeClass("open")}d.clearTimeout(a);f=e(this);a=d.setTimeout(function(){f.addClass("open")},b)}).on("mousemove",function(g){if(Math.abs(c.x-g.ScreenX)>4||Math.abs(c.y-g.ScreenY)>4){c.x=g.ScreenX;c.y=g.ScreenY;return}if(f.hasClass("open")){return}d.clearTimeout(a);a=d.setTimeout(function(){f.addClass("open")},b)}).on("mouseleave",function(g){d.clearTimeout(a);f=e(this);a=d.setTimeout(function(){f.removeClass("open")},b)})})(jQuery,window,10);
     </script>
+    {% block javascript %}{% endblock %}
   </body>
 </html>

@@ -1,9 +1,10 @@
 
-from vsvlandb import app, dbo, vlans, subnets, sites, impacts, helpers, hsh
+from vsvlandb import app, dbo, vlans, subnets, sites, impacts, helpers, hsh, ath
 from vsvlandb.models import VLAN, Subnet, Site, Impact, User
 from vsvlandb.forms import vlan, subnet, site, impact, user
 
 from flask import redirect, request, render_template, url_for, flash
+from flask.ext.login import login_required, login_user, logout_user
 
 from sqlalchemy.exc import IntegrityError
 
@@ -12,25 +13,68 @@ import ipaddress
 from datetime import datetime
 from sets import Set
 
+# Configure the login manager 
+ath.login_view = "login"
+ath.login_message_category = 'danger'
+
 # Root/Index
 @app.route('/')
+@login_required
 def index():
     vlan_data = VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id)).limit(20)
     subn_data = Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id)).limit(20)
 
     return render_template('index.html', vlans=vlan_data, subnets=subn_data)
 
-@app.route('/login')
+# Logins
+@ath.user_loader
+def load_user(user_id):
+    return User.query.filter_by(id=user_id, isactive=True).first()
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = user.UserForm_Login()
 
     if form.validate_on_submit():
-        pass
+        target = User.query.filter_by(email=form.email.data, isactive=True).first()
+        if target.valid_password(form.password.data):
+            login_user(target)
+            return redirect(request.args.get("next") or '/')
+        else:
+            flash("Access denied.", category='danger')
 
     return render_template('users/login.html', form=form)
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/login')
+
+# Users
+@app.route("/users")
+@login_required
+def users_list():
+    pass
+
+@app.route("/users/add", methods=['GET', 'POST'])
+@login_required
+def users_add():
+    pass
+
+@app.route("/users/edit/<int:user_id>", methods=['GET', 'POST'])
+@login_required
+def users_edit(user_id):
+    pass
+
+@app.route("/users/delete/<int:user_id", methods=['GET', 'POST'])
+@login_required
+def users_list(user_id):
+    pass
+
 # VLANS
 @app.route('/vlans')
+@login_required
 def vlans_list():
     data = {
         'active': VLAN.query.filter_by(isactive=True).order_by(dbo.desc(VLAN.id)),
@@ -40,6 +84,7 @@ def vlans_list():
     return render_template('vlans/vlans_list.html', vlans=data)
 
 @app.route('/vlans/add', methods=['GET', 'POST'])
+@login_required
 def vlans_add():
     data = helpers.top_ten()
     form = vlan.VlanForm()
@@ -77,11 +122,13 @@ def vlans_add():
     return render_template('vlans/vlans_add.html', data=data, form=form)
 
 @app.route('/vlans/view/<int:vlanid>')
+@login_required
 def vlans_view(vlanid):
     vlan = VLAN.query.filter_by(id=vlanid).first()
     return render_template('vlans/vlans_view.html', vlan=vlan)
 
 @app.route('/vlans/edit/<int:vlanid>', methods=['GET', 'POST'])
+@login_required
 def vlans_edit(vlanid):
     data = helpers.top_ten()
     target = VLAN.query.get(vlanid)
@@ -121,6 +168,7 @@ def vlans_edit(vlanid):
     return render_template('vlans/vlans_edit.html', data=data, vlan=target, form=form)
 
 @app.route('/vlans/delete/<int:vlanid>', methods=['GET', 'POST'])
+@login_required
 def vlans_delete(vlanid):
     target = VLAN.query.get(vlanid)
     if target:
@@ -134,6 +182,7 @@ def vlans_delete(vlanid):
 
 # Subnets
 @app.route('/subnets')
+@login_required
 def subnets_list():
     lists = {
         'active': Subnet.query.filter_by(isactive=True).order_by(dbo.desc(Subnet.id)),
@@ -143,11 +192,13 @@ def subnets_list():
     return render_template('subnets/subnets_list.html', subnets=lists)
 
 @app.route('/subnets/view/<int:subnetid>')
+@login_required
 def subnets_view(subnetid):
     target = Subnet.query.filter_by(id=subnetid).first()
     return render_template('subnets/subnets_view.html', subnet=target)
 
 @app.route('/subnets/add', methods=['GET', 'POST'])
+@login_required
 def subnets_add():
     form = subnet.SubnetForm()
     data = helpers.top_ten()
@@ -203,6 +254,7 @@ def subnets_add():
     return render_template('subnets/subnets_add.html', data=data, form=form)
 
 @app.route('/subnets/edit/<int:subnetid>', methods=['GET', 'POST'])
+@login_required
 def subnets_edit(subnetid):
     target = Subnet.query.get(subnetid)
     form = subnet.SubnetForm(obj=target)
@@ -247,6 +299,7 @@ def subnets_edit(subnetid):
     return render_template('subnets/subnets_edit.html', data=helpers.top_ten(), subnet=target, form=form)
 
 @app.route('/subnets/delete/<int:subnetid>')
+@login_required
 def subnets_delete(subnetid):
     target = Subnet.query.get(subnetid)
 
@@ -262,6 +315,7 @@ def subnets_delete(subnetid):
 
 #Sites
 @app.route('/sites')
+@login_required
 def sites_list():
     lists = {
         'active': Site.query.filter_by(isactive=True).order_by(dbo.desc(Site.id)),
@@ -271,11 +325,13 @@ def sites_list():
     return render_template('sites/sites_list.html', sites=lists)
 
 @app.route('/sites/view/<int:siteid>')
+@login_required
 def sites_view(siteid):
     target = Site.query.filter_by(id=siteid).first()
     return render_template('sites/sites_view.html', site=target)
 
 @app.route('/sites/add', methods=['GET', 'POST'])
+@login_required
 def sites_add():
     form = site.SiteForm()
 
@@ -300,6 +356,7 @@ def sites_add():
     return render_template('sites/sites_add.html', data=helpers.top_ten(), form=form)
 
 @app.route('/sites/edit/<int:siteid>', methods=['GET', 'POST'])
+@login_required
 def sites_edit(siteid):
     form = site.SiteForm()
 
@@ -319,6 +376,7 @@ def sites_edit(siteid):
     return render_template('sites/sites_edit.html', site=target, data=data, form=form)
 
 @app.route('/sites/delete/<int:siteid>', methods=['GET', 'POST'])
+@login_required
 def sites_delete(siteid):
     sites.delete_id(siteid)
     return redirect('/sites')
@@ -328,6 +386,7 @@ def sites_delete(siteid):
 
 # Impacts
 @app.route('/impacts')
+@login_required
 def impacts_list():
     data = {
         'active': Impact.query.filter_by(isactive=True).order_by(dbo.desc(Impact.id)),
@@ -337,6 +396,7 @@ def impacts_list():
     return render_template('impacts/impacts_list.html', impacts=data)
 
 @app.route('/impacts/add', methods=['GET', 'POST'])
+@login_required
 def impacts_add():
     form = impact.ImpactForm()
 
@@ -349,11 +409,13 @@ def impacts_add():
     return render_template('impacts/impacts_add.html', data=helpers.top_ten(), form=form)
 
 @app.route('/impacts/view/<int:impactid>')
+@login_required
 def impacts_view(impactid):
     impact = Impact.query.filter_by(id=impactid).first()
     return render_template('impacts/impacts_view.html', impact=impact)
 
 @app.route('/impacts/edit/<int:impactid>', methods=['GET', 'POST'])
+@login_required
 def impacts_edit(impactid):
     form = impact.ImpactForm()
 
@@ -372,6 +434,8 @@ def impacts_edit(impactid):
     return render_template('impacts/impacts_edit.html', impact=target, data=helpers.top_ten(), form=form)
 
 @app.route('/impacts/delete/<int:impactid>', methods=['GET', 'POST'])
+@login_required
 def impacts_delete(impactid):
     impacts.delete_id(impactid)
     return redirect('/vlans')
+

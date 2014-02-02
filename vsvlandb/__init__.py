@@ -1,10 +1,11 @@
 from flask import Flask
-from flask.ext import restful, sqlalchemy, bcrypt
+from flask.ext import restful, sqlalchemy, bcrypt, login
 
 app = Flask(__name__)
 
 api = restful.Api(app)
 dbo = sqlalchemy.SQLAlchemy(app)
 hsh = bcrypt.Bcrypt(app)
+ath = login.LoginManager(app)
 
 from vsvlandb import web_endpoints, api_endpoints
