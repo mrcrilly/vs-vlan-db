@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}VS VLAN DB - Add User{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Add New User</h4>
+            </div>
+            <div class="panel-body">
+                <form role="form" action="/users/add" method="post" name="adduser">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.email.label(for="vlan") }}
+                        {{ form.email(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.name.label(for="vlan") }}
+                        {{ form.name(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.password.label(for="vlan") }}
+                        {{ form.password(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.password.label(for="vlan") }}
+                        {{ form.password(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.email.label(for="vlan") }}
+                        {{ form.email(class="form-control") }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isactive.label }}
+                        {{ form.isactive }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isadmin.label }}
+                        {{ form.isadmin }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.isreadonly.label }}
+                        {{ form.isreadonly }}
+                    </div>
+                    <div class="checkbox">
+                        {{ form.canapi.label }}
+                        {{ form.canapi }}
+                    </div>
+                    <button type="submit" class="btn btn-success">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Current Users</h4>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    
+                </thead>
+            {% if users %}
+                {% for user in users %}
+                    <tr>
+                        <td>{{user.email}}</td>
+                        <td>{{user.name}}</td>
+                        <td>{{user.isadmin}}</td>
+                        <td>{{user.isreadonly}}</td>
+                        <td>{{user.canapi}}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td>N/D</td>
+                </tr>
+            {% endif %}
+            </table>
+    </div>
+</div>
+{% endblock %}

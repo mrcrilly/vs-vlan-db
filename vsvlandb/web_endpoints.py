@@ -43,7 +43,7 @@ def login():
         else:
             flash("Access denied.", category='danger')
 
-    return render_template('users/login.html', form=form)
+    return render_template('users/users_login.html', form=form)
 
 @app.route('/logout')
 @login_required
@@ -55,21 +55,32 @@ def logout():
 @app.route("/users")
 @login_required
 def users_list():
-    pass
+    data = {
+        'active': User.query.filter_by(isactive=True).order_by(dbo.desc(User.id)),
+        'inactive': User.query.filter_by(isactive=False).order_by(dbo.desc(User.id)),
+    }
+
+    return render_template('users/users_list.html', users=data)
 
 @app.route("/users/add", methods=['GET', 'POST'])
 @login_required
 def users_add():
-    pass
+    form = user.UserForm_New()
+
+    if form.validate_on_submit():
+        pass
+
+    users = User.query.filter_by(isactive=True).all()
+    return render_template('users/users_add.html', users=users, form=form)
 
 @app.route("/users/edit/<int:user_id>", methods=['GET', 'POST'])
 @login_required
 def users_edit(user_id):
     pass
 
-@app.route("/users/delete/<int:user_id", methods=['GET', 'POST'])
+@app.route("/users/delete/<int:user_id>", methods=['GET', 'POST'])
 @login_required
-def users_list(user_id):
+def users_delete(user_id):
     pass
 
 # VLANS

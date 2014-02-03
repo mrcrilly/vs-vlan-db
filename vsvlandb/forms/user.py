@@ -1,3 +1,4 @@
+from vsvlandb import dbo
 from vsvlandb.models import Site, Subnet, Impact
 
 from flask.ext.wtf import Form
@@ -10,11 +11,16 @@ class UserForm_Login(Form):
     password = PasswordField(u'Password', validators=[DataRequired()])
 
 class UserForm_New(Form):
-    # email = dbo.Column(dbo.String(100), unique=True)
-    # name = dbo.Column(dbo.String(100))
-    # password = dbo.Column(dbo.String(100))
-    # isactive = dbo.Column(dbo.Boolean)
-    # isadmin = dbo.Column(dbo.Boolean)
+    email = StringField(u'Email Address', validators=[DataRequired(), Email()])
+    name = StringField(u'Name', validators=[DataRequired()])
 
-    # added = dbo.Column(dbo.DateTime)
-    pass
+    password = PasswordField('Password', validators=[DataRequired()])
+    password_confirm = PasswordField('Password', validators=[DataRequired()])
+
+    isactive = BooleanField(u'Active User', default=True)
+    isadmin = BooleanField(u'Administrator', default=False)
+    isreadonly = BooleanField(u'Read Only', default=False)
+    canapi = BooleanField(u'API Access', default=False)
+
+    added = dbo.Column(dbo.DateTime)
+    lastlogin = dbo.Column(dbo.DateTime)

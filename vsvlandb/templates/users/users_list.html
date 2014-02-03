@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}VS VLAN DB - Users{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">Users</h4>
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-pills nav-stacked">
+                    <li><a href="/users/add">
+                    <i class="fa fa-plus-square fa-lg"></i> Add</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a href="#activetable" data-toggle="collapse" data-parent="#accordion">
+                        {% if users['active'].all()|count >= 1 %}
+                            Active Users
+                        {% else %}
+                            No Active Users
+                        {% endif %}
+                        </a>
+                    </h4>
+                </div>
+                <div class="panel-collapse collapse in" id="activetable">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <input type="text" class="form-control input-sm" id="search" placeholder="Search..."></input>
+                            </div>
+                        </div><br />
+                        <table class="table table-striped table-hover searchable">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Name</th>
+                                    <th>Active</th>
+                                    <th>Admin</th>
+                                    <th>Readonly</th>
+                                    <th>API</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% if users['active'].all()|count >= 1 %}
+                                {% for user in users['active'].all() %}
+                                    <tr class="clickable-row" href="/users/view/{{user.id}}">
+                                        <td><a href="/users/view/{{user.id}}">{{user.email}}</a></td>
+                                        <td><a href="/users/view/{{user.id}}">{{user.name}}</a></td>
+                                        <td>{{user.isactive}}</td>
+                                        <td>{{user.isadmin}}</td>
+                                        <td>{{user.isreadonly}}</td>
+                                        <td>{{user.canapi}}</td>
+                                    </tr>
+                                {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td>N/D</td>
+                                        <td>N/D</td>
+                                        <td>N/D</td>
+                                        <td>N/D</td>
+                                        <td>N/D</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a href="#inactivetable" data-toggle="collapse" data-parent="#accordion">
+                            {% if users['inactive'].all()|count >= 1 %}
+                                Inactive Users
+                            {% else %}
+                                No Inactive Users
+                            {% endif %}
+                            </a>
+                        </h4>
+                </div>
+                <div class="panel-collapse collapse" id="inactivetable">
+                    <div class="panel-body">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Name</th>
+                                    <th>Active</th>
+                                    <th>Admin</th>
+                                    <th>Readonly</th>
+                                    <th>API</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% if users['active'].all()|count >= 1 %}
+                                {% for user in users['active'].all() %}
+                                    <tr class="clickable-row" href="/users/view/{{user.id}}">
+                                        <td><a href="/users/view/{{user.id}}">{{user.email}}</a></td>
+                                        <td><a href="/users/view/{{user.id}}">{{user.name}}</a></td>
+                                        <td>{{user.isactive}}</td>
+                                        <td>{{user.isadmin}}</td>
+                                        <td>{{user.isreadonly}}</td>
+                                        <td>{{user.canapi}}</td>
+                                    </tr>
+                                {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td>N/D</td>
+                                        <td>N/D</td>
+                                        <td>N/D</td>
+                                        <td>N/D</td>
+                                        <td>N/D</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
